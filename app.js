@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUserAvatar.textContent = user.avatar;
         currentUserName.textContent = user.name;
         currentUserRole.textContent = user.role;
-        currentUserKarma.innerHTML = `<i class="fa-solid fa-hand-holding-heart"></i> Squad Member`;
+        currentUserKarma.innerHTML = `<i class="fa-solid fa-hand-holding-heart"></i> TEST`;
     }
 
     function renderUserDropdown() {
