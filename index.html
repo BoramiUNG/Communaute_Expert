@@ -3,861 +3,565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="LineUp7 Guild Hub — le hub interne de la Guilde d'experts MarTech & Data : arbre de compétences, matrice des talents, snippets, clinique tech, blog et badges gamifiés.">
-    <meta name="theme-color" content="#32ac5c">
-    <meta property="og:title" content="LineUp7 | Guilde MarTech & Data Hub">
-    <meta property="og:description" content="Le hub gamifié de la communauté d'experts LineUp7 : compétences, entraide et thought leadership.">
+    <meta name="description" content="LineUp7 Guild Hub — le hub interne de la Guilde d'experts MarTech & Data : dashboard, arbre de compétences, matrice des talents, snippets, clinique tech, blog et badges gamifiés.">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:title" content="LineUp7 | Guild Hub — MarTech & Data">
+    <meta property="og:description" content="Le hub gamifié de la communauté d'experts LineUp7 : compétences, entraide, badges et thought leadership.">
     <meta property="og:type" content="website">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f172a'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%2332ac5c'%3EL7%3C/text%3E%3C/svg%3E">
-    <title>LineUp7 | Guilde MarTech & Data Hub</title>
-    <!-- Google Fonts -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230f172a'/%3E%3Ctext x='50' y='68' font-size='54' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%2332ac5c'%3EL7%3C/text%3E%3C/svg%3E">
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Guild Hub">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230f172a'/%3E%3Ctext x='50' y='68' font-size='54' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%2332ac5c'%3EL7%3C/text%3E%3C/svg%3E">
+    <title>LineUp7 | Guild Hub — MarTech & Data</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="dark-theme">
-    <!-- Top Navigation Bar -->
-    <header class="navbar">
-        <div class="nav-container">
-            <div class="brand">
-                <div class="logo-site">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 478.54 245.89" class="lineup7-svg">
-                        <style>
-                            .cls-green { fill: #32ac5c; }
-                            .cls-white { fill: #ffffff; }
-                        </style>
-                        <g class="cls-white">
-                            <path d="M148.07,165.05c3,0,7.24.96,11.18,4.05,0,0,4.99-5.53,4.99-5.53-5.4-4.49-12.9-5.3-16.17-5.3-8.06,0-14.14,4.36-14.14,10.26,0,1.24-.43,8.03,11.59,10.61,10.06,2.16,10.38,3.29,10.38,4.91s-1.48,1.95-2.01,2.12c-.97.31-2.3.53-4.1.53-5.61,0-10.27-2.36-13.13-4.47l-5.1,5.79c3.89,2.99,10.8,5.46,17.17,5.46,7.69,0,15.01-2.5,15.01-10.24,0-2.4-.44-7.5-11.55-10.12-8.49-2.01-10.37-3.04-10.37-5.05,0-2.3,3.58-3.02,6.24-3.02Z"/>
-                            <path d="M225.64,165.05c3,0,7.24.96,11.18,4.05,0,0,4.99-5.53,4.99-5.53-5.4-4.49-12.9-5.3-16.17-5.3-8.06,0-14.14,4.36-14.14,10.26,0,1.24-.43,8.03,11.59,10.61,10.06,2.16,10.38,3.29,10.38,4.91,0,2.4-3.94,2.65-6.1,2.65-5.61,0-10.27-2.36-13.13-4.47l-5.1,5.79c3.89,2.99,10.8,5.46,17.17,5.46,7.69,0,15.01-2.5,15.01-10.24,0-2.4-.44-7.5-11.55-10.12-8.49-2.01-10.37-3.04-10.37-5.05,0-2.3,3.58-3.02,6.24-3.02Z"/>
-                            <path d="M187.2,158.26c-12.6,0-20.6,7.78-20.6,17.62,0,9.38,7.48,17.62,20.6,17.62,13.14,0,20.6-8.23,20.6-17.62,0-9.83-8.04-17.62-20.6-17.62ZM199.7,175.92c0,6.3-4.84,10.8-12.47,10.8-8.08,0-12.41-4.82-12.41-10.8,0-6.2,4.49-10.86,12.41-10.86,8.34,0,12.47,5.13,12.47,10.86Z"/>
-                            <path d="M302.99,158.26c-12.67,0-20.16,8.34-20.16,17.62,0,9.9,6.53,17.62,20.53,17.62,3.91,0,8.77-.52,14.08-2.87l-3.26-6.16c-3.87,2.03-8.38,2.37-10.32,2.37-6.46,0-11.08-2.73-12.49-7.3h29.98c.09-1.01.19-1.96.19-2.98,0-11.18-8.15-18.3-18.55-18.3ZM312.99,173.02h-21.88c1.03-4.43,4.59-8.11,11.26-8.11s9.9,4.23,10.62,8.11Z"/>
-                            <rect x="119.1" y="159.07" width="7.89" height="33.6"/>
-                            <polygon points="266.63 174.35 282.82 159.07 272.25 159.07 259.24 171.52 254.4 171.52 254.4 148.3 246.45 148.3 246.45 192.67 254.4 192.67 254.4 178.35 260.08 178.35 273.16 192.67 283.66 192.67 266.63 174.35"/>
-                            <rect x="326.94" y="148.3" width="7.95" height="44.37"/>
-                            <path d="M371.65,184.47c-2.21,1.19-6.19,2.37-10.32,2.37-3.85,0-10.48-1.06-12.5-7.3h11.3l10.3-6.52h-21.85c.94-4.14,4.3-8.11,11.26-8.11,8.41,0,10.43,6.54,10.62,8.1l6.94-4.39c-1.51-3.71-6.64-10.35-16.93-10.35-3.01,0-13.8.42-18.7,10.7-1.01,2.12-2.73,7.92,0,14.38,2.33,5.5,8.31,10.14,19.08,10.14,7.38,0,11.89-1.91,14.08-2.86l-3.26-6.16Z"/>
-                        </g>
-                        <g class="cls-green">
-                            <path d="M311.93,148.3h0c0,1.83-1.49,3.32-3.32,3.32h-13.11c-1.83,0-3.32-1.49-3.32-3.32h0c0-1.83,1.49-3.32,3.32-3.32h13.11c1.83,0,3.32,1.49,3.32,3.32Z"/>
-                            <path d="M123.01,153.19c2.78,0,5.1-2.18,5.1-4.91s-2.38-4.85-5.1-4.85-5.1,2.05-5.1,4.85,2.37,4.91,5.1,4.91Z"/>
-                            <path d="M292.4,64.73h13.31v39.03c0,5.81-2.71,10.38-8.14,13.71-5.43,3.33-12.67,5-21.73,5s-16.3-1.67-21.73-5c-5.43-3.33-8.14-7.9-8.14-13.71v-39.03h13.31v35.64c0,3.76,1.25,6.51,3.75,8.23,2.5,1.72,6.76,2.58,12.78,2.58,4.08,0,7.35-.39,9.8-1.17,2.45-.78,4.19-1.95,5.24-3.51,1.05-1.56,1.57-3.6,1.57-6.13v-35.64Z"/>
-                            <path d="M367.96,97.79c0,3.92-.46,7.37-1.37,10.32-.92,2.96-2.11,5.32-3.59,7.1-1.48,1.77-3.29,3.21-5.44,4.31-2.15,1.1-4.3,1.85-6.45,2.26-2.15.4-4.52.6-7.1.6-6.99,0-12.12-1.34-15.4-4.03v15.97h-12.9v-60.08h10.73l.97,5.73c.97-1.24,2.19-2.35,3.67-3.35,1.48-.99,3.44-1.83,5.89-2.5,2.45-.67,5.12-1.01,8.02-1.01,2.37,0,4.57.2,6.61.6,2.04.4,4.1,1.16,6.17,2.26,2.07,1.1,3.83,2.54,5.28,4.31,1.45,1.77,2.63,4.15,3.55,7.14.91,2.98,1.37,6.44,1.37,10.36ZM355.14,97.79c0-3.01-.27-5.5-.81-7.46-.54-1.96-1.38-3.47-2.54-4.52-1.16-1.05-2.5-1.79-4.03-2.22-1.53-.43-3.46-.65-5.77-.65-6.67,0-11.21,1.77-13.63,5.32v20.72c2.96,2.21,7.18,3.31,12.66,3.31,2.58,0,4.69-.19,6.33-.56,1.64-.38,3.08-1.09,4.31-2.14,1.24-1.05,2.12-2.53,2.66-4.44.54-1.91.81-4.37.81-7.38Z"/>
-                            <path d="M374.49,64.73h51.21v8.63l-31.21,47.82h-15.08l31.37-46.37h-36.29v-10.08Z"/>
-                        </g>
-                        <g class="cls-white">
-                            <path d="M211.87,72.49c-18.87,0-28.75,12.66-28.75,25.16,0,15.75,10.94,25.16,29.27,25.16,7.24,0,13.78-1.33,19.99-4.07l.28-.12-4.88-9.22-.25.13c-6.03,3.16-13.09,3.32-14.45,3.32-8.75,0-15.16-3.63-17.25-9.74h42.2l.07-.74c.12-1.27.22-2.46.22-3.76,0-15.38-10.88-26.12-26.47-26.12ZM225.64,93.33h-30.18c.92-3.54,4.19-10.89,15.53-10.89,9.11,0,13.52,5.56,14.65,10.89Z"/>
-                            <path d="M115.85,121.18h-12.68v-46.83h12.68v46.83Z"/>
-                            <path d="M109.51,65.98c3.87,0,7.1-3.04,7.1-6.84s-3.32-6.76-7.1-6.76-7.1,2.86-7.1,6.76,3.3,6.84,7.1,6.84Z"/>
-                            <path d="M46.45,64.73h13.31v45.24h34.67v11.21h-47.98v-56.45Z"/>
-                            <path d="M155.31,73.04c2.58,0,5.07.35,7.46,1.05,2.39.7,4.58,1.73,6.57,3.1,1.99,1.37,3.56,3.23,4.72,5.56,1.16,2.34,1.73,5.01,1.73,8.02v30.4h-12.9v-28.39c0-2.31-.52-4.22-1.57-5.73-1.05-1.5-2.38-2.57-3.99-3.19-1.61-.62-3.5-.93-5.64-.93-5.11,0-9.14,1.83-12.1,5.48l-.48.48v32.26h-12.9v-46.93h10.73l.97,5.64c4.68-4.57,10.48-6.85,17.42-6.85Z"/>
-                        </g>
+<body>
+    <div class="app-shell" id="app-shell">
+
+        <!-- ============================== SIDEBAR ============================== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
+                        <rect width="40" height="40" rx="11" fill="#32ac5c"/>
+                        <text x="20" y="27" font-size="19" font-family="Montserrat, Arial" font-weight="900" text-anchor="middle" fill="#0f172a">L7</text>
                     </svg>
                 </div>
-                <span class="badge-tag">EXPERT GUILD</span>
+                <div class="brand-text">
+                    <span class="brand-title">LineUp7</span>
+                    <span class="brand-sub">Guild Hub</span>
+                </div>
+                <button class="sidebar-collapse" id="sidebar-collapse" title="Réduire le menu" aria-label="Réduire le menu">
+                    <i class="fa-solid fa-angles-left"></i>
+                </button>
             </div>
 
-            <nav class="nav-links">
-                <button class="nav-btn active" data-tab="skill-tree">
-                    <i class="fa-solid fa-network-wired"></i> Arbre Tech
-                </button>
-                <button class="nav-btn" data-tab="talent-matrix">
-                    <i class="fa-solid fa-table-cells"></i> Matrice des Talents
-                </button>
-                <button class="nav-btn" data-tab="snippet-vault">
-                    <i class="fa-solid fa-code"></i> Snippet Vault
-                </button>
-                <button class="nav-btn" data-tab="clinique">
-                    <i class="fa-solid fa-kit-medical"></i> Clinique Tech <span class="badge-count" id="active-incidents-count">3</span>
-                </button>
-                <button class="nav-btn" data-tab="master-index">
-                    <i class="fa-solid fa-database"></i> Master Index
-                </button>
-                <button class="nav-btn" data-tab="quests">
-                    <i class="fa-solid fa-scroll"></i> Quêtes
-                </button>
-                <button class="nav-btn" data-tab="blog">
-                    <i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i> Blog & LinkedIn
-                </button>
-                <button class="nav-btn" data-tab="karma">
-                    <i class="fa-solid fa-heart-pulse"></i> Squad
-                </button>
+            <nav class="sidebar-nav" aria-label="Navigation principale">
+                <span class="nav-group-label">Pilotage</span>
+                <button class="nav-btn active" data-tab="dashboard"><i class="fa-solid fa-gauge-high"></i><span>Accueil</span></button>
+                <button class="nav-btn" data-tab="analytics"><i class="fa-solid fa-chart-pie"></i><span>Guild Analytics</span></button>
+                <button class="nav-btn" data-tab="karma"><i class="fa-solid fa-trophy"></i><span>Squad &amp; Badges</span></button>
+
+                <span class="nav-group-label">Expertise</span>
+                <button class="nav-btn" data-tab="skill-tree"><i class="fa-solid fa-sitemap"></i><span>Skill Tree</span></button>
+                <button class="nav-btn" data-tab="talent-matrix"><i class="fa-solid fa-table-cells"></i><span>Matrice Talents</span></button>
+                <button class="nav-btn" data-tab="snippet-vault"><i class="fa-solid fa-code"></i><span>Snippet Vault</span></button>
+
+                <span class="nav-group-label">Collaboration</span>
+                <button class="nav-btn" data-tab="clinique"><i class="fa-solid fa-kit-medical"></i><span>Clinique Tech</span><span class="nav-count" id="nav-clinique-count">3</span></button>
+                <button class="nav-btn" data-tab="master-index"><i class="fa-solid fa-database"></i><span>Master Index</span></button>
+                <button class="nav-btn" data-tab="quests"><i class="fa-solid fa-scroll"></i><span>Quêtes</span></button>
+                <button class="nav-btn" data-tab="blog"><i class="fa-solid fa-newspaper"></i><span>Blog &amp; LinkedIn</span></button>
             </nav>
 
-            <div class="user-switcher-container" id="user-switcher-container">
-                <div class="user-profile" id="user-profile-trigger" title="Cliquer pour changer de profil utilisateur">
-                    <div class="avatar" id="current-user-avatar">EM</div>
-                    <div class="user-info">
-                        <span class="user-name" id="current-user-name">Elian.M</span>
-                        <span class="user-role" id="current-user-role">Practice Lead & Mentor</span>
-                        <div class="xp-progress" title="Progression vers le niveau suivant">
-                            <div class="xp-progress-track"><div class="xp-progress-fill" id="xp-progress-fill"></div></div>
-                            <span class="xp-progress-label" id="xp-progress-label"></span>
-                        </div>
+            <div class="sidebar-foot">
+                <div class="sidebar-foot-card">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div>
+                        <strong>Phase 1 · Prototype</strong>
+                        <span>localStorage · v2.0</span>
                     </div>
-                    <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                 </div>
+            </div>
+        </aside>
+        <div class="sidebar-scrim" id="sidebar-scrim"></div>
 
-                <div class="user-dropdown-menu" id="user-dropdown-menu">
-                    <div class="dropdown-header">Changer d'utilisateur</div>
-                    <div class="dropdown-users-list" id="dropdown-users-list">
-                        <!-- Rendered by JS -->
-                    </div>
-                    <div class="dropdown-footer">
-                        <button class="btn btn-sm btn-outline btn-block" id="btn-open-add-user-modal">
-                            <i class="fa-solid fa-user-plus"></i> Ajouter un membre
+        <!-- ============================== MAIN AREA ============================== -->
+        <div class="main-area">
+            <header class="topbar">
+                <button class="icon-square burger" id="sidebar-toggle" aria-label="Ouvrir le menu"><i class="fa-solid fa-bars"></i></button>
+
+                <button class="global-search-trigger" id="open-search" aria-label="Recherche globale">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Rechercher un membre, une compétence, un snippet…</span>
+                    <kbd>/</kbd>
+                </button>
+
+                <div class="topbar-right">
+                    <button class="icon-square theme-toggle" id="theme-toggle" aria-label="Basculer le thème" title="Thème clair / sombre">
+                        <i class="fa-solid fa-sun"></i>
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <button class="icon-square notif-bell" id="notif-bell" aria-label="Notifications" title="Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notif-dot" id="notif-count" hidden>0</span>
+                    </button>
+
+                    <div class="user-switcher-container" id="user-switcher-container">
+                        <button class="user-profile" id="user-profile-trigger" title="Changer de profil actif">
+                            <div class="avatar" id="current-user-avatar">EM</div>
+                            <div class="user-info">
+                                <span class="user-name" id="current-user-name">Elian.M</span>
+                                <span class="user-role" id="current-user-role">Practice Lead &amp; Mentor</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                         </button>
+                        <div class="user-dropdown-menu" id="user-dropdown-menu">
+                            <div class="dropdown-head">
+                                <span>Incarner un profil</span>
+                                <span class="dropdown-karma" id="current-user-karma"></span>
+                            </div>
+                            <div class="dropdown-users-list" id="dropdown-users-list"></div>
+                            <button class="btn btn-sm btn-outline btn-block" id="btn-open-add-user-modal">
+                                <i class="fa-solid fa-user-plus"></i> Ajouter un membre
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <div class="karma-pill" id="current-user-karma" title="Statut d'entraide">
-                <i class="fa-solid fa-hand-holding-heart"></i> TEST
-            </div>
-        </div>
-    </header>
+            <main class="content" id="content">
 
-    <!-- Main Content Container -->
-    <main class="main-container">
-        
-        <!-- ================= TAB 1: SKILL TREE ================= -->
-        <section id="tab-skill-tree" class="tab-content active">
-            <div class="section-header">
-                <div>
-                    <h2><i class="fa-solid fa-network-wired"></i> Arbre de Compétences & Cartographie Tech</h2>
-                    <p class="subtitle">Explorez les expertises de l'équipe, débloquez des blueprints et identifiez les Référents Tech chez LineUp7.</p>
-                </div>
-                <div class="header-actions">
-                    <div class="status-legend">
-                        <span class="legend-item"><span class="dot master"></span> Maîtrisé (Blueprints prêts)</span>
-                        <span class="legend-item"><span class="dot in-progress"></span> En Déploiement</span>
-                        <span class="legend-item"><span class="dot quest"></span> Quête Ouverte</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Skill Tree Pillars Canvas Grid -->
-            <div class="skill-tree-grid">
-                
-                <!-- Pillar 1: Salesforce & AI Agents -->
-                <div class="tree-pillar" data-pillar="salesforce">
-                    <div class="pillar-header salesforce-theme">
-                        <div class="pillar-icon"><i class="fa-brands fa-salesforce"></i></div>
+                <!-- ===================== DASHBOARD ===================== -->
+                <section id="tab-dashboard" class="tab-content active">
+                    <div class="page-head">
                         <div>
-                            <h3>Salesforce & Agentforce</h3>
-                            <span class="pillar-sub">Engines, CDP & AI Agents</span>
+                            <h1 class="page-title" id="dash-greeting">Bonjour 👋</h1>
+                            <p class="page-subtitle">Voici l'état de la Guilde LineUp7 et de votre progression.</p>
                         </div>
+                        <button class="btn btn-primary" id="dash-quick-article"><i class="fa-solid fa-feather-pointed"></i> Rédiger un article</button>
                     </div>
-                    <div class="node-tree">
-                        <div class="tree-node node-master" data-node-id="sfmc-core">
-                            <div class="node-status"><i class="fa-solid fa-check"></i></div>
-                            <div class="node-content">
-                                <h4>Marketing Cloud Engagement</h4>
-                                <p>SQL Data Views, SSJS, Automation Studio</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag">SFMC Core</span>
-                                    <span class="expert-count"><i class="fa-solid fa-user-group"></i> 6 Experts</span>
+
+                    <div class="stat-grid" id="dash-stats"></div>
+
+                    <div class="dash-columns">
+                        <div class="dash-col-main">
+                            <div class="panel">
+                                <div class="panel-head"><h3><i class="fa-solid fa-bolt"></i> Votre progression</h3></div>
+                                <div id="dash-progress"></div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel-head">
+                                    <h3><i class="fa-solid fa-kit-medical"></i> Clinique Tech · cas ouverts</h3>
+                                    <button class="link-btn switch-tab" data-target="clinique">Tout voir <i class="fa-solid fa-arrow-right"></i></button>
                                 </div>
+                                <div id="dash-clinique"></div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel-head">
+                                    <h3><i class="fa-solid fa-newspaper"></i> Derniers articles</h3>
+                                    <button class="link-btn switch-tab" data-target="blog">Tout voir <i class="fa-solid fa-arrow-right"></i></button>
+                                </div>
+                                <div id="dash-articles" class="dash-articles"></div>
                             </div>
                         </div>
-
-                        <div class="tree-connector"></div>
-
-                        <div class="tree-node node-master" data-node-id="sf-datacloud">
-                            <div class="node-status"><i class="fa-solid fa-check"></i></div>
-                            <div class="node-content">
-                                <h4>Salesforce Data Cloud</h4>
-                                <p>DMO/DSO Modeling, Identity Resolution</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag">Data Cloud</span>
-                                    <span class="expert-count"><i class="fa-solid fa-user-group"></i> 4 Experts</span>
+                        <div class="dash-col-side">
+                            <div class="panel">
+                                <div class="panel-head">
+                                    <h3><i class="fa-solid fa-award"></i> Prochains badges</h3>
+                                    <button class="link-btn switch-tab" data-target="karma">Badges <i class="fa-solid fa-arrow-right"></i></button>
                                 </div>
+                                <div id="dash-next-badges"></div>
                             </div>
-                        </div>
-
-                        <div class="tree-connector"></div>
-
-                        <div class="tree-node node-active" data-node-id="agentforce-mcp">
-                            <div class="node-status"><i class="fa-solid fa-bolt"></i></div>
-                            <div class="node-content">
-                                <h4>Agentforce & Serveurs MCP</h4>
-                                <p>AI Agents, Model Context Protocol, Tools API</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag highlight">HOT 2026</span>
-                                    <span class="expert-count"><i class="fa-solid fa-star"></i> Elian M. (Lead)</span>
-                                </div>
+                            <div class="panel">
+                                <div class="panel-head"><h3><i class="fa-solid fa-wave-square"></i> Activité récente</h3></div>
+                                <div id="dash-activity" class="activity-feed"></div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Pillar 2: Pure-Play CDP & Activation -->
-                <div class="tree-pillar" data-pillar="imagino">
-                    <div class="pillar-header imagino-theme">
-                        <div class="pillar-icon"><i class="fa-solid fa-bullseye"></i></div>
+                <!-- ===================== SKILL TREE ===================== -->
+                <section id="tab-skill-tree" class="tab-content">
+                    <div class="page-head">
                         <div>
-                            <h3>Imagino Ecosystem</h3>
-                            <span class="pillar-sub">CDP & Multi-channel Campaign</span>
+                            <h1 class="page-title"><i class="fa-solid fa-sitemap"></i> Skill Tree</h1>
+                            <p class="page-subtitle">L'arbre de maîtrise technologique de la Guilde. Cliquez un nœud pour voir les référents, les blueprints et déclarer votre niveau.</p>
                         </div>
                     </div>
-                    <div class="node-tree">
-                        <div class="tree-node node-master" data-node-id="imagino-cdp">
-                            <div class="node-status"><i class="fa-solid fa-check"></i></div>
-                            <div class="node-content">
-                                <h4>Imagino CDP</h4>
-                                <p>Unification Data, Single Customer View</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag">CDP</span>
-                                    <span class="expert-count"><i class="fa-solid fa-user-group"></i> 5 Experts</span>
-                                </div>
-                            </div>
+                    <div class="skill-tree-grid">
+                        <div class="skill-branch">
+                            <h3 class="branch-title sf"><i class="fa-brands fa-salesforce"></i> Salesforce Ecosystem</h3>
+                            <div class="tree-node node-master" data-node-id="sfmc-core"><i class="fa-solid fa-envelope-open-text"></i><div><span class="node-name">Marketing Cloud &amp; AMPscript</span><span class="node-tag">SQL · SSJS · Délivrabilité</span></div></div>
+                            <div class="tree-node node-master" data-node-id="sf-datacloud"><i class="fa-solid fa-diagram-project"></i><div><span class="node-name">Data Cloud &amp; Insights</span><span class="node-tag">DMO/DSO · Identity · CI</span></div></div>
+                            <div class="tree-node node-active" data-node-id="agentforce-mcp"><i class="fa-solid fa-robot"></i><div><span class="node-name">Agentforce &amp; Serveurs MCP</span><span class="node-tag">AI Agents · Model Context Protocol</span></div></div>
                         </div>
-
-                        <div class="tree-connector"></div>
-
-                        <div class="tree-node node-master" data-node-id="imagino-campaign">
-                            <div class="node-status"><i class="fa-solid fa-check"></i></div>
-                            <div class="node-content">
-                                <h4>Imagino Campaign</h4>
-                                <p>Orchestration cross-canal, Triggers API</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag">Activation</span>
-                                    <span class="expert-count"><i class="fa-solid fa-user-group"></i> 4 Experts</span>
-                                </div>
-                            </div>
+                        <div class="skill-branch">
+                            <h3 class="branch-title imagino"><i class="fa-solid fa-bullseye"></i> Imagino CDP</h3>
+                            <div class="tree-node node-master" data-node-id="imagino-cdp"><i class="fa-solid fa-id-card"></i><div><span class="node-name">Imagino CDP &amp; Golden Record</span><span class="node-tag">Unification · Déduplication</span></div></div>
+                            <div class="tree-node node-master" data-node-id="imagino-campaign"><i class="fa-solid fa-paper-plane"></i><div><span class="node-name">Imagino Campaign</span><span class="node-tag">Triggers temps réel · Activation</span></div></div>
+                        </div>
+                        <div class="skill-branch">
+                            <h3 class="branch-title data"><i class="fa-solid fa-cloud"></i> Modern Data Stack</h3>
+                            <div class="tree-node node-master" data-node-id="gcp-bigquery"><i class="fa-brands fa-google"></i><div><span class="node-name">GCP BigQuery &amp; GCS</span><span class="node-tag">Partition · Coûts · Looker</span></div></div>
+                            <div class="tree-node node-master" data-node-id="snowflake-data"><i class="fa-solid fa-snowflake"></i><div><span class="node-name">Snowflake &amp; Clean Rooms</span><span class="node-tag">Zero-Copy · Secure Views</span></div></div>
+                            <div class="tree-node node-master" data-node-id="dbt-modeling"><i class="fa-solid fa-cubes"></i><div><span class="node-name">dbt &amp; Data Quality</span><span class="node-tag">Jinja · Incrémental · Tests</span></div></div>
+                            <div class="tree-node node-active" data-node-id="airflow-pipelines"><i class="fa-solid fa-wind"></i><div><span class="node-name">Apache Airflow</span><span class="node-tag">DAGs · Orchestration · Retries</span></div></div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Pillar 3: Cloud Data Stack (MarTech Focus) -->
-                <div class="tree-pillar" data-pillar="cloud-data">
-                    <div class="pillar-header cloud-theme">
-                        <div class="pillar-icon"><i class="fa-solid fa-cloud"></i></div>
+                <!-- ===================== TALENT MATRIX ===================== -->
+                <section id="tab-talent-matrix" class="tab-content">
+                    <div class="page-head">
                         <div>
-                            <h3>Modern Data Stack</h3>
-                            <span class="pillar-sub">Snowflake & GCP MarTech</span>
+                            <h1 class="page-title"><i class="fa-solid fa-table-cells"></i> Matrice des Talents</h1>
+                            <p class="page-subtitle">Vue croisée membres × compétences. Cliquez une cellule pour faire évoluer un niveau (Confirmé → Expert → Apprenti → vide).</p>
+                        </div>
+                        <div class="matrix-scroll-btns">
+                            <button class="icon-square" id="btn-scroll-matrix-left" aria-label="Défiler à gauche"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button class="icon-square" id="btn-scroll-matrix-right" aria-label="Défiler à droite"><i class="fa-solid fa-chevron-right"></i></button>
                         </div>
                     </div>
-                    <div class="node-tree">
-                        <div class="tree-node node-master" data-node-id="gcp-bigquery">
-                            <div class="node-status"><i class="fa-solid fa-check"></i></div>
-                            <div class="node-content">
-                                <h4>GCP BigQuery & GCS</h4>
-                                <p>Pipelines Ingestion, Cost Optimization, GCS</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag">GCP</span>
-                                    <span class="expert-count"><i class="fa-solid fa-user-group"></i> 7 Experts</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tree-connector"></div>
-
-                        <div class="tree-node node-master" data-node-id="snowflake-data">
-                            <div class="node-status"><i class="fa-solid fa-check"></i></div>
-                            <div class="node-content">
-                                <h4>Snowflake Data Cloud</h4>
-                                <p>Zero-Copy Share, Secure Views, Data Sharing</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag">Snowflake</span>
-                                    <span class="expert-count"><i class="fa-solid fa-user-group"></i> 3 Experts</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="table-container">
+                        <table class="master-table matrix-table">
+                            <thead>
+                                <tr class="super-header-row">
+                                    <th rowspan="2" style="min-width: 150px; vertical-align: middle; text-align:left;">Membre Squad</th>
+                                    <th colspan="4" class="family-header sf-family"><i class="fa-brands fa-salesforce"></i> SFMC &amp; MC Next</th>
+                                    <th colspan="2" class="family-header dc-family"><i class="fa-solid fa-database"></i> Data Cloud</th>
+                                    <th colspan="2" class="family-header ai-family"><i class="fa-solid fa-robot"></i> Agentforce &amp; MCP</th>
+                                    <th colspan="2" class="family-header imagino-family"><i class="fa-solid fa-bullseye"></i> Imagino</th>
+                                    <th colspan="4" class="family-header data-family"><i class="fa-solid fa-cloud"></i> Modern Data Stack</th>
+                                    <th rowspan="2" class="family-header quality-family" style="vertical-align: middle;"><i class="fa-solid fa-shield-halved"></i> Audit</th>
+                                </tr>
+                                <tr class="sub-header-row">
+                                    <th>AMPscript</th><th>SSJS &amp; SQL</th><th>Délivrabilité</th><th>MC Next</th>
+                                    <th>DMO &amp; Identity</th><th>Insights</th>
+                                    <th>Agentforce</th><th>Serveurs MCP</th>
+                                    <th>Imagino CDP</th><th>Campaign</th>
+                                    <th>BigQuery</th><th>Snowflake</th><th>dbt</th><th>Airflow</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-table-body"><!-- JS --></tbody>
+                        </table>
                     </div>
-                </div>
+                </section>
 
-                <!-- Pillar 4: Data Eng & Orchestration -->
-                <div class="tree-pillar" data-pillar="data-eng">
-                    <div class="pillar-header eng-theme">
-                        <div class="pillar-icon"><i class="fa-solid fa-code-branch"></i></div>
+                <!-- ===================== SNIPPET VAULT ===================== -->
+                <section id="tab-snippet-vault" class="tab-content">
+                    <div class="page-head">
                         <div>
-                            <h3>Data Eng & Orchestration</h3>
-                            <span class="pillar-sub">dbt, Airflow & Workflows</span>
+                            <h1 class="page-title"><i class="fa-solid fa-code"></i> Snippet Vault</h1>
+                            <p class="page-subtitle">La bibliothèque de code réutilisable de la Guilde. Copiez, réutilisez, contribuez.</p>
                         </div>
+                        <button class="btn btn-primary" id="btn-open-add-snippet-modal"><i class="fa-solid fa-plus"></i> Publier un snippet</button>
                     </div>
-                    <div class="node-tree">
-                        <div class="tree-node node-master" data-node-id="dbt-modeling">
-                            <div class="node-status"><i class="fa-solid fa-check"></i></div>
-                            <div class="node-content">
-                                <h4>dbt Transformation</h4>
-                                <p>Models SQL/Jinja, Testing Data Quality</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag">dbt</span>
-                                    <span class="expert-count"><i class="fa-solid fa-user-group"></i> 4 Experts</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tree-connector"></div>
-
-                        <div class="tree-node node-active" data-node-id="airflow-pipelines">
-                            <div class="node-status"><i class="fa-solid fa-bolt"></i></div>
-                            <div class="node-content">
-                                <h4>Airflow & Orchestration</h4>
-                                <p>DAGs MarTech, Sync CRM, Triggers API</p>
-                                <div class="node-meta">
-                                    <span class="tech-tag">Airflow</span>
-                                    <span class="expert-count"><i class="fa-solid fa-user-group"></i> 3 Experts</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ================= TAB 2: MATRICE DES TALENTS ================= -->
-        <section id="tab-talent-matrix" class="tab-content">
-            <div class="section-header">
-                <div>
-                    <h2><i class="fa-solid fa-table-cells"></i> Matrice Globale des Talents LineUp7</h2>
-                    <p class="subtitle">Vue d'ensemble croisée des expertises de la Squad (Membres x Technologies).</p>
-                </div>
-            </div>
-
-            <div class="matrix-toolbar">
-                <span class="toolbar-hint">
-                    <i class="fa-solid fa-arrows-left-right"></i> <strong>15 Compétences</strong> (Défiler vers la droite pour voir BigQuery, Snowflake, dbt, Airflow)
-                </span>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-sm btn-outline" id="btn-scroll-matrix-left"><i class="fa-solid fa-arrow-left"></i> Défiler Gauche</button>
-                    <button class="btn btn-sm btn-primary" id="btn-scroll-matrix-right">Défiler Droite (Snowflake / dbt) <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <table class="master-table matrix-table">
-                    <thead>
-                        <tr class="super-header-row">
-                            <th rowspan="2" style="min-width: 140px; vertical-align: middle;">Membre Squad</th>
-                            <th colspan="4" class="family-header sf-family"><i class="fa-brands fa-salesforce"></i> SFMC & MC Next</th>
-                            <th colspan="2" class="family-header dc-family"><i class="fa-solid fa-database"></i> Data Cloud</th>
-                            <th colspan="2" class="family-header ai-family"><i class="fa-solid fa-robot"></i> Agentforce & MCP</th>
-                            <th colspan="2" class="family-header imagino-family"><i class="fa-solid fa-bullseye"></i> Imagino CDP / Campaign</th>
-                            <th colspan="4" class="family-header data-family"><i class="fa-solid fa-cloud"></i> Modern Data Stack (GCP / Snowflake / dbt / Airflow)</th>
-                            <th rowspan="2" class="family-header quality-family" style="vertical-align: middle;"><i class="fa-solid fa-shield-halved"></i> Audit Tech</th>
-                        </tr>
-                        <tr class="sub-header-row">
-                            <th>AMPscript</th>
-                            <th>SSJS & SQL</th>
-                            <th>Délivrabilité</th>
-                            <th>MC Next</th>
-                            <th>DMO & Identity</th>
-                            <th>Insights</th>
-                            <th>Agentforce</th>
-                            <th>Serveurs MCP</th>
-                            <th>Imagino CDP</th>
-                            <th>Campaign</th>
-                            <th>BigQuery</th>
-                            <th>Snowflake</th>
-                            <th>dbt</th>
-                            <th>Airflow</th>
-                        </tr>
-                    </thead>
-                    <tbody id="matrix-table-body">
-                        <!-- Rendered dynamically by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- ================= TAB 3: SNIPPET VAULT ================= -->
-        <section id="tab-snippet-vault" class="tab-content">
-            <div class="section-header">
-                <div>
-                    <h2><i class="fa-solid fa-code"></i> Snippet Vault (Bibliothèque de Code 1-Clic)</h2>
-                    <p class="subtitle">Recettes de code réutilisables, requêtes SQL optimisées et scripts de configuration prêts à l'emploi.</p>
-                </div>
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <div class="filter-pills" id="snippet-filters">
+                    <div class="filter-bar" id="snippet-filters">
                         <button class="filter-btn active" data-filter="all">Tous</button>
                         <button class="filter-btn" data-filter="SFMC">SFMC / SSJS</button>
-                        <button class="filter-btn" data-filter="GCP">GCP / BigQuery</button>
+                        <button class="filter-btn" data-filter="DataCloud">Data Cloud</button>
                         <button class="filter-btn" data-filter="MCP">Agentforce / MCP</button>
-                        <button class="filter-btn" data-filter="Imagino">Imagino</button>
+                        <button class="filter-btn" data-filter="GCP">GCP / BigQuery</button>
                         <button class="filter-btn" data-filter="dbt">dbt / Airflow</button>
                     </div>
-                    <button class="btn btn-sm btn-primary" id="btn-open-add-snippet-modal">
-                        <i class="fa-solid fa-plus"></i> Créer un Snippet
-                    </button>
-                </div>
-            </div>
+                    <div class="snippets-grid" id="snippets-container"><!-- JS --></div>
+                </section>
 
-            <div class="snippets-grid" id="snippets-container">
-                <!-- Snippet cards rendered dynamically by JS -->
-            </div>
-        </section>
-
-        <!-- ================= TAB 4: CLINIQUE TECH ================= -->
-        <section id="tab-clinique" class="tab-content">
-            <div class="section-header">
-                <div>
-                    <h2><i class="fa-solid fa-kit-medical"></i> La Clinique Tech (War Room)</h2>
-                    <p class="subtitle">Soumettez vos blocages projets réels ou rejoignez une session de déblocage collectif de 30 minutes.</p>
-                </div>
-                <button class="btn btn-primary" id="btn-open-submit-modal">
-                    <i class="fa-solid fa-plus"></i> Amener mon problème projet
-                </button>
-            </div>
-
-            <!-- Active Incidents Board -->
-            <div class="incidents-grid" id="incidents-container">
-                
-                <div class="incident-card urgent">
-                    <div class="incident-header">
-                        <span class="badge-status open"><i class="fa-solid fa-circle"></i> À l'Ordre du jour (Prochaine Clinique)</span>
-                        <span class="incident-date">Ajouté hier</span>
-                    </div>
-                    <h3 class="incident-title">Deadlock de requêtes SQL sur BigQuery lors de l'export vers SFMC</h3>
-                    <p class="incident-desc">Sur le compte client BeyMédias, le job de nuit plante 1 fois sur 3 avec une erreur de timeout sur l'ingestion de la table d'audience.</p>
-                    <div class="incident-tags">
-                        <span class="tag">#GCP</span>
-                        <span class="tag">#BigQuery</span>
-                        <span class="tag">#SFMC</span>
-                    </div>
-                    <div class="incident-footer">
-                        <div class="author">
-                            <div class="avatar-sm">LA</div>
-                            <span>Lucas.A (Consultant)</span>
+                <!-- ===================== CLINIQUE TECH ===================== -->
+                <section id="tab-clinique" class="tab-content">
+                    <div class="page-head">
+                        <div>
+                            <h1 class="page-title"><i class="fa-solid fa-kit-medical"></i> Clinique Tech</h1>
+                            <p class="page-subtitle">Vos points de blocage techniques. Soumettez un cas, ou inscrivez-vous comme Helper pour gagner de l'XP.</p>
                         </div>
-                        <button class="btn btn-sm btn-outline btn-claim" data-id="1">
-                            <i class="fa-solid fa-hand-holding-hand"></i> M'inscrire pour l'aider
-                        </button>
+                        <button class="btn btn-primary" id="btn-open-submit-modal"><i class="fa-solid fa-triangle-exclamation"></i> Soumettre un cas</button>
                     </div>
-                </div>
-
-                <div class="incident-card in-progress">
-                    <div class="incident-header">
-                        <span class="badge-status active"><i class="fa-solid fa-bolt"></i> En Déblocage Live</span>
-                        <span class="incident-date">Aujourd'hui</span>
-                    </div>
-                    <h3 class="incident-title">Configuration d'un Serveur MCP pour interfacer Agentforce avec Snowflake</h3>
-                    <p class="incident-desc">Besoin de créer un endpoint sécurisé MCP pour permettre à un agent Agentforce d'interroger la base Snowflake sans exposer les clés API.</p>
-                    <div class="incident-tags">
-                        <span class="tag">#Agentforce</span>
-                        <span class="tag">#MCP</span>
-                        <span class="tag">#Snowflake</span>
-                    </div>
-                    <div class="incident-footer">
-                        <div class="author">
-                            <div class="avatar-sm primary">EM</div>
-                            <span>Elian.M (Practice Lead)</span>
+                    <div class="incidents-list" id="incidents-container">
+                        <div class="incident-card urgent">
+                            <div class="incident-header"><span class="badge-status open"><i class="fa-solid fa-circle"></i> À l'ordre du jour</span><span class="incident-date">Il y a 2 jours</span></div>
+                            <h3 class="incident-title">Identity Resolution Data Cloud : doublons persistants malgré Match Rules</h3>
+                            <p class="incident-desc">Les règles de réconciliation par email ne fusionnent pas 12% des profils. Piste sur la normalisation avant ingestion ?</p>
+                            <div class="incident-tags"><span class="tag">#DataCloud</span> <span class="tag">#Identity</span></div>
+                            <div class="incident-footer">
+                                <div class="author"><div class="avatar-sm">YK</div><span>Yassine.K</span></div>
+                                <button class="btn btn-sm btn-outline btn-claim"><i class="fa-solid fa-hand-holding-hand"></i> M'inscrire pour aider</button>
+                            </div>
                         </div>
-                        <button class="btn btn-sm btn-success">
-                            <i class="fa-solid fa-video"></i> Rejoindre la session Teams
-                        </button>
-                    </div>
-                </div>
-
-                <div class="incident-card resolved">
-                    <div class="incident-header">
-                        <span class="badge-status done"><i class="fa-solid fa-circle-check"></i> Résolu & Documenté</span>
-                        <span class="incident-date">Il y a 3 jours</span>
-                    </div>
-                    <h3 class="incident-title">Problème de déduplication des profils clients dans Imagino CDP</h3>
-                    <p class="incident-desc">Résolution de la règle de matching des e-mails anonymisés. La fiche Loop de 15 minutes a été générée et ajoutée au Master Index.</p>
-                    <div class="incident-tags">
-                        <span class="tag">#Imagino</span>
-                        <span class="tag">#CDP</span>
-                    </div>
-                    <div class="incident-footer">
-                        <div class="author">
-                            <div class="avatar-sm">BU</div>
-                            <span>Borami.U & Yousra.B</span>
+                        <div class="incident-card">
+                            <div class="incident-header"><span class="badge-status open"><i class="fa-solid fa-circle"></i> À l'ordre du jour</span><span class="incident-date">Il y a 4 jours</span></div>
+                            <h3 class="incident-title">SFMC : timeout SSJS sur purge d'une DE de 4M de lignes</h3>
+                            <p class="incident-desc">Le script Rows.Clear() timeout en production. Faut-il passer par une Automation SQL en batch ?</p>
+                            <div class="incident-tags"><span class="tag">#SFMC</span> <span class="tag">#SSJS</span></div>
+                            <div class="incident-footer">
+                                <div class="author"><div class="avatar-sm">LA</div><span>Lucas.A</span></div>
+                                <button class="btn btn-sm btn-outline btn-claim"><i class="fa-solid fa-hand-holding-hand"></i> M'inscrire pour aider</button>
+                            </div>
                         </div>
-                        <button class="link-btn switch-tab" data-target="master-index">
-                            <i class="fa-solid fa-file-code"></i> Voir la fiche Loop
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 15-Minute Doc Generator Wizard Container -->
-            <div class="doc-wizard-card">
-                <div class="wizard-header">
-                    <div>
-                        <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Générateur de Fiche Loop (La Règle des 15 Min)</h3>
-                        <p>Vous avez débloqué un problème ? Remplissez ce mini-formulaire pour générer votre compte-rendu Loop et l'ajouter au Master Index.</p>
-                    </div>
-                </div>
-                <form id="doc-generator-form" class="wizard-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Titre de la Fiche / Problème</label>
-                            <input type="text" id="gen-title" placeholder="ex: Optimisation requête SQL SFMC Data View" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Technos (Tags)</label>
-                            <input type="text" id="gen-tags" placeholder="ex: SFMC, SQL, BigQuery" required>
+                        <div class="incident-card">
+                            <div class="incident-header"><span class="badge-status open"><i class="fa-solid fa-circle"></i> À l'ordre du jour</span><span class="incident-date">Il y a 6 jours</span></div>
+                            <h3 class="incident-title">Serveur MCP : sécuriser l'accès Data Cloud pour un agent Agentforce</h3>
+                            <p class="incident-desc">Quelle stratégie d'auth (OAuth JWT ?) pour exposer un Tool MCP sans surface d'attaque ?</p>
+                            <div class="incident-tags"><span class="tag">#MCP</span> <span class="tag">#Agentforce</span></div>
+                            <div class="incident-footer">
+                                <div class="author"><div class="avatar-sm">HS</div><span>Hugo.S</span></div>
+                                <button class="btn btn-sm btn-outline btn-claim"><i class="fa-solid fa-hand-holding-hand"></i> M'inscrire pour aider</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Symptôme & Cause Racine (2 lignes)</label>
-                            <textarea id="gen-cause" rows="2" placeholder="Expliquez brièvement le blocage initial..." required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Solution / Code Snippet / Config</label>
-                            <textarea id="gen-solution" rows="2" placeholder="Copiez-collez ici la solution..." required></textarea>
-                        </div>
+
+                    <div class="panel" style="margin-top: 2rem;">
+                        <div class="panel-head"><h3><i class="fa-solid fa-file-circle-plus"></i> Générateur de fiche Loop (Master Index)</h3></div>
+                        <p class="page-subtitle" style="margin-bottom:1rem;">Transformez une résolution en fiche documentée réutilisable. +50 XP.</p>
+                        <form id="doc-generator-form" class="wizard-form">
+                            <div class="form-row">
+                                <div class="form-group"><label>Titre de la fiche</label><input type="text" id="gen-title" placeholder="ex: Optimisation purge DE SFMC via Automation SQL" required></div>
+                                <div class="form-group"><label>Tags (séparés par des virgules)</label><input type="text" id="gen-tags" placeholder="ex: SFMC, SQL, Performance" required></div>
+                            </div>
+                            <div class="form-group"><label>Cause racine</label><textarea id="gen-cause" rows="2" placeholder="Décrivez la cause identifiée…"></textarea></div>
+                            <div class="form-group"><label>Solution appliquée</label><textarea id="gen-solution" rows="2" placeholder="Décrivez la solution…"></textarea></div>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Générer &amp; publier la fiche</button>
+                        </form>
                     </div>
-                    <div class="wizard-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa-solid fa-paper-plane"></i> Générer & Publier sur le Master Index (+50 XP)
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
+                </section>
 
-        <!-- ================= TAB 3: QUESTS & BLUEPRINTS ================= -->
-        <section id="tab-quests" class="tab-content">
-            <div class="section-header">
-                <div>
-                    <h2><i class="fa-solid fa-scroll"></i> Quêtes de la Guilde & Blueprints Réutilisables</h2>
-                    <p class="subtitle">Relevez des défis d'architecture internes ou téléchargez les modèles prêts à l'emploi pour vos projets clients.</p>
-                </div>
-            </div>
-
-            <div class="quests-grid">
-                
-                <div class="quest-card">
-                    <div class="quest-badge gold"><i class="fa-solid fa-award"></i> Quête Prioritaire</div>
-                    <h3>Création du Template Standard "Serveur MCP Salesforce Data Cloud"</h3>
-                    <p>Développer et documenter un blueprint réutilisable pour connecter un agent Agentforce aux objets Data Cloud via le protocole MCP.</p>
-                    <div class="quest-reward">
-                        <span class="xp">+350 XP</span>
-                        <span class="badge-item"><i class="fa-solid fa-medal"></i> Badge "MCP Pioneer"</span>
-                    </div>
-                    <button class="btn btn-primary btn-block btn-accept-quest" data-toast="Quête acceptée ! Elle a été ajoutée à votre feuille de route. Bonne chance !">Prendre cette Quête</button>
-                </div>
-
-                <div class="quest-card">
-                    <div class="quest-badge silver"><i class="fa-solid fa-star"></i> Blueprint Dispo</div>
-                    <h3>Checklist d'Audit Technique SFMC (Version 2026)</h3>
-                    <p>Accélérateur d'avant-vente et de cadrage. Grille d'évaluation complète des Data Views, Automations et API Triggers.</p>
-                    <div class="quest-reward">
-                        <span class="doc-link"><i class="fa-solid fa-file-pdf"></i> Blueprint LineUp7_SFMC_Audit.pdf</span>
-                    </div>
-                    <button class="btn btn-outline btn-block" data-toast="Asset téléchargé ! (Exemple de Blueprint LineUp7)"><i class="fa-solid fa-download"></i> Télécharger l'Asset</button>
-                </div>
-
-                <div class="quest-card">
-                    <div class="quest-badge silver"><i class="fa-solid fa-star"></i> Blueprint Dispo</div>
-                    <h3>Connecteur Ingestion BigQuery ➔ Imagino CDP via dbt</h3>
-                    <p>Pipeline dbt clé en main pour transformer et pousser les segments clients dans Imagino Campaign sans friction.</p>
-                    <div class="quest-reward">
-                        <span class="doc-link"><i class="fa-solid fa-code-branch"></i> Repository dbt-imagino-recipe</span>
-                    </div>
-                    <button class="btn btn-outline btn-block" data-toast="Code dbt copié dans le presse-papier !"><i class="fa-solid fa-code"></i> Copier la recette</button>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ================= TAB 4: MASTER INDEX ================= -->
-        <section id="tab-master-index" class="tab-content">
-            <div class="section-header">
-                <div>
-                    <h2><i class="fa-solid fa-database"></i> Master Index (L'Anti-Cimetière d'Informations)</h2>
-                    <p class="subtitle">Base de connaissance centralisée. Toutes les fiches Loop et solutions projets indexées et recherchables.</p>
-                </div>
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-index" placeholder="Rechercher par techno, mot-clé, projet...">
-                </div>
-            </div>
-
-            <!-- Master Table -->
-            <div class="table-container">
-                <table class="master-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Problème / Sujet Résolu</th>
-                            <th>Technos & Tags</th>
-                            <th>Auteur / Helper</th>
-                            <th>Fiche Loop / Asset</th>
-                        </tr>
-                    </thead>
-                    <tbody id="master-table-body">
-                        <tr>
-                            <td>30/07/2026</td>
-                            <td>Optimisation des indexations Snowflake sur l'historique d'achats</td>
-                            <td><span class="tag">#Snowflake</span> <span class="tag">#dbt</span></td>
-                            <td>Elian.M / Hugo.S</td>
-                            <td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #104</a></td>
-                        </tr>
-                        <tr>
-                            <td>28/07/2026</td>
-                            <td>Fix Timeout API Ingestion Salesforce Data Cloud via Cloud Functions</td>
-                            <td><span class="tag">#DataCloud</span> <span class="tag">#GCP</span></td>
-                            <td>Yassine.K / Lucas.A</td>
-                            <td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #103</a></td>
-                        </tr>
-                        <tr>
-                            <td>25/07/2026</td>
-                            <td>Script SSJS générique de nettoyage des Data Extensions SFMC</td>
-                            <td><span class="tag">#SFMC</span> <span class="tag">#SSJS</span></td>
-                            <td>Yousra.B / Lucas.A</td>
-                            <td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #102</a></td>
-                        </tr>
-                        <tr>
-                            <td>20/07/2026</td>
-                            <td>Modélisation de l'identité omnicanale dans Imagino CDP</td>
-                            <td><span class="tag">#Imagino</span> <span class="tag">#CDP</span></td>
-                            <td>Borami.U</td>
-                            <td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #101</a></td>
-                        </tr>
-                        <tr>
-                            <td>15/07/2026</td>
-                            <td>Setup d'un DAG Airflow pour sync BigQuery vers SFMC Marketing Cloud</td>
-                            <td><span class="tag">#Airflow</span> <span class="tag">#GCP</span> <span class="tag">#SFMC</span></td>
-                            <td>Hugo.S / Elian.M</td>
-                            <td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #100</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- ================= TAB: BLOG & LINKEDIN ================= -->
-        <section id="tab-blog" class="tab-content">
-            <div class="section-header">
-                <div>
-                    <h2><i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i> Tech Leadership & Articles LinkedIn</h2>
-                    <p class="subtitle">Valorisation externe de l'expertise LineUp7. Articles techniques en Markdown prêts à être copiés sur LinkedIn.</p>
-                </div>
-                <button class="btn btn-sm btn-primary" id="btn-open-add-article-modal">
-                    <i class="fa-solid fa-pen-nib"></i> Rédiger un Article (Markdown)
-                </button>
-            </div>
-
-            <div class="filter-bar" id="blog-filters">
-                <!-- Category filters rendered dynamically by JS -->
-            </div>
-
-            <div class="snippets-grid" id="articles-container">
-                <!-- Blog Cards rendered dynamically by JS -->
-            </div>
-        </section>
-
-        <!-- ================= TAB 5: SQUAD & GRATITUDE ================= -->
-        <section id="tab-karma" class="tab-content">
-            <div class="section-header">
-                <div>
-                    <h2><i class="fa-solid fa-heart-pulse"></i> Squad LineUp7 & Mur de Gratitude</h2>
-                    <p class="subtitle">Entraide, partage de connaissances et célébration des contributions de l'équipe.</p>
-                </div>
-            </div>
-
-            <div class="karma-leaderboard-grid">
-                <div class="leaderboard-card">
-                    <div class="leaderboard-header">
-                        <h3><i class="fa-solid fa-people-group"></i> Les Membres de la Squad</h3>
-                    </div>
-                    <ul class="leader-list">
-                        <!-- Rendered dynamically by JS as Squad Cards without ranking numbers -->
-                    </ul>
-                </div>
-
-                <div class="badges-card">
-                    <div class="badges-card-header">
-                        <h3><i class="fa-solid fa-award"></i> Vos Badges d'Expertise</h3>
-                        <div class="badges-progress">
-                            <div class="badges-progress-track"><div class="badges-progress-fill" id="badges-progress-fill"></div></div>
-                            <span id="badges-progress-text">0 / 0 badges débloqués</span>
+                <!-- ===================== MASTER INDEX ===================== -->
+                <section id="tab-master-index" class="tab-content">
+                    <div class="page-head">
+                        <div>
+                            <h1 class="page-title"><i class="fa-solid fa-database"></i> Master Index</h1>
+                            <p class="page-subtitle">Le référentiel documentaire de la Guilde. Toutes les fiches Loop capitalisées.</p>
                         </div>
                     </div>
-                    <p class="badges-hint">Débloquez des badges en déclarant des compétences, en contribuant au Vault, en publiant des articles et en aidant la Squad. La progression est propre au profil actif.</p>
-                    <div class="badges-flex" id="badges-showcase">
-                        <!-- Badges rendered dynamically by JS for the current user -->
+                    <div class="search-inline">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="search-index" placeholder="Rechercher par techno, mot-clé, projet…">
                     </div>
-                </div>
+                    <div class="table-container">
+                        <table class="master-table">
+                            <thead><tr><th>Date</th><th>Titre de la fiche</th><th>Tags</th><th>Auteur</th><th>Lien</th></tr></thead>
+                            <tbody id="master-table-body">
+                                <tr><td>24/07/2026</td><td>Federated Zero-Copy Snowflake ➔ Data Cloud</td><td><span class="tag">#Snowflake</span> <span class="tag">#ZeroCopy</span></td><td>Hugo.S</td><td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #104</a></td></tr>
+                                <tr><td>18/07/2026</td><td>Boilerplate serveur MCP Node.js sécurisé</td><td><span class="tag">#MCP</span> <span class="tag">#Agentforce</span></td><td>Elian.M</td><td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #103</a></td></tr>
+                                <tr><td>10/07/2026</td><td>Calculated Insight RFM dans Data Cloud</td><td><span class="tag">#DataCloud</span> <span class="tag">#SQL</span></td><td>Yassine.K</td><td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #102</a></td></tr>
+                                <tr><td>02/07/2026</td><td>Plan d'IP Warming SFMC sur 4 semaines</td><td><span class="tag">#SFMC</span> <span class="tag">#Délivrabilité</span></td><td>Lucas.A</td><td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #101</a></td></tr>
+                                <tr><td>25/06/2026</td><td>Golden Record Imagino : recette de config</td><td><span class="tag">#Imagino</span> <span class="tag">#CDP</span></td><td>Borami.U</td><td><a href="#" class="index-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Fiche Loop #100</a></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ===================== QUÊTES ===================== -->
+                <section id="tab-quests" class="tab-content">
+                    <div class="page-head">
+                        <div>
+                            <h1 class="page-title"><i class="fa-solid fa-scroll"></i> Quêtes de la Guilde</h1>
+                            <p class="page-subtitle">Des défis d'équipe pour monter en compétence collectivement et débloquer des assets.</p>
+                        </div>
+                    </div>
+                    <div class="snippets-grid">
+                        <div class="quest-card">
+                            <div class="quest-head"><span class="quest-reward"><i class="fa-solid fa-bolt"></i> +150 XP</span><span class="quest-diff hard">Difficile</span></div>
+                            <h3 class="snippet-title">Déployer un serveur MCP de démo</h3>
+                            <p class="snippet-desc">Monter un serveur MCP Node.js exposant un Tool de lecture Data Cloud, testé avec un agent Agentforce.</p>
+                            <button class="btn btn-primary btn-block btn-accept-quest" data-toast="Quête acceptée ! Elle a été ajoutée à votre feuille de route. Bonne chance !">Prendre cette Quête</button>
+                        </div>
+                        <div class="quest-card">
+                            <div class="quest-head"><span class="quest-reward"><i class="fa-solid fa-bolt"></i> +80 XP</span><span class="quest-diff medium">Intermédiaire</span></div>
+                            <h3 class="snippet-title">Blueprint : audit délivrabilité SFMC</h3>
+                            <p class="snippet-desc">Compléter la grille d'audit SAP / SPF / DKIM / DMARC sur une BU de test et documenter les écarts.</p>
+                            <button class="btn btn-outline btn-block" data-toast="Asset téléchargé ! (Exemple de Blueprint LineUp7)"><i class="fa-solid fa-download"></i> Télécharger l'Asset</button>
+                        </div>
+                        <div class="quest-card">
+                            <div class="quest-head"><span class="quest-reward"><i class="fa-solid fa-bolt"></i> +60 XP</span><span class="quest-diff easy">Accessible</span></div>
+                            <h3 class="snippet-title">Recette dbt incrémentale Imagino</h3>
+                            <p class="snippet-desc">Écrire un modèle dbt incrémental qui déduplique les profils unifiés depuis Imagino vers BigQuery.</p>
+                            <button class="btn btn-outline btn-block" data-toast="Code dbt copié dans le presse-papier !"><i class="fa-solid fa-code"></i> Copier la recette</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===================== BLOG ===================== -->
+                <section id="tab-blog" class="tab-content">
+                    <div class="page-head">
+                        <div>
+                            <h1 class="page-title"><i class="fa-solid fa-newspaper"></i> Blog &amp; LinkedIn</h1>
+                            <p class="page-subtitle">Le thought leadership de la Guilde. Rédigez en Markdown, publiez, partagez sur LinkedIn.</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-open-add-article-modal"><i class="fa-brands fa-linkedin"></i> Rédiger un article</button>
+                    </div>
+                    <div class="filter-bar" id="blog-filters"><!-- JS --></div>
+                    <div class="snippets-grid" id="articles-container"><!-- JS --></div>
+                </section>
+
+                <!-- ===================== SQUAD & BADGES ===================== -->
+                <section id="tab-karma" class="tab-content">
+                    <div class="page-head">
+                        <div>
+                            <h1 class="page-title"><i class="fa-solid fa-trophy"></i> Squad &amp; Badges</h1>
+                            <p class="page-subtitle">Le classement de la Guilde et votre collection de badges d'expertise.</p>
+                        </div>
+                    </div>
+                    <div class="karma-layout">
+                        <div class="panel leaderboard-panel">
+                            <div class="panel-head"><h3><i class="fa-solid fa-ranking-star"></i> Classement XP</h3></div>
+                            <ul class="leader-list"><!-- JS --></ul>
+                        </div>
+                        <div class="panel badges-card">
+                            <div class="badges-card-header">
+                                <h3><i class="fa-solid fa-award"></i> Vos badges d'expertise</h3>
+                                <div class="badges-progress">
+                                    <div class="badges-progress-track"><div class="badges-progress-fill" id="badges-progress-fill"></div></div>
+                                    <span id="badges-progress-text">0 / 0 badges</span>
+                                </div>
+                            </div>
+                            <p class="badges-hint">Débloquez des badges en déclarant des compétences, en contribuant au Vault, en publiant des articles et en aidant la Squad. La progression est propre au profil actif.</p>
+                            <div class="badges-flex" id="badges-showcase"><!-- JS --></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================== ANALYTICS ============================== -->
+                <section id="tab-analytics" class="tab-content">
+                    <div class="page-head">
+                        <div>
+                            <h1 class="page-title"><i class="fa-solid fa-chart-pie"></i> Guild Analytics</h1>
+                            <p class="page-subtitle">La santé des compétences de la Guilde : profils radar, couverture, et détection des points de fragilité (bus-factor).</p>
+                        </div>
+                    </div>
+                    <div class="stat-grid" id="analytics-kpis"><!-- JS --></div>
+                    <div class="analytics-grid">
+                        <div class="panel">
+                            <div class="panel-head"><h3><i class="fa-solid fa-user-astronaut"></i> Profil radar</h3></div>
+                            <div class="radar-wrap">
+                                <select class="inline-select radar-select" id="radar-member-select"></select>
+                                <div id="radar-container"><!-- JS SVG --></div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel-head"><h3><i class="fa-solid fa-shield-halved"></i> Points de fragilité (SPOF)</h3></div>
+                            <p class="badges-hint">Compétences détenues par un seul expert = risque de <strong>bus-factor</strong>. À prioriser pour le partage de connaissance.</p>
+                            <div id="spof-list"><!-- JS --></div>
+                        </div>
+                        <div class="panel" style="grid-column: 1 / -1;">
+                            <div class="panel-head"><h3><i class="fa-solid fa-fire"></i> Heatmap des compétences</h3></div>
+                            <div class="heatmap" id="skills-heatmap"><!-- JS --></div>
+                        </div>
+                        <div class="panel" style="grid-column: 1 / -1;">
+                            <div class="panel-head"><h3><i class="fa-solid fa-layer-group"></i> Couverture par domaine</h3></div>
+                            <div id="coverage-list"><!-- JS --></div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ============================== NOTIFICATIONS PANEL ============================== -->
+    <div class="notif-panel" id="notif-panel" hidden>
+        <div class="notif-panel-head">
+            <h4><i class="fa-solid fa-bell"></i> Notifications</h4>
+            <button class="link-btn" id="notif-mark-read">Tout marquer lu</button>
+        </div>
+        <div class="notif-list" id="notif-list"></div>
+    </div>
+
+    <!-- ============================== GLOBAL SEARCH ============================== -->
+    <div class="search-overlay" id="search-overlay" hidden>
+        <div class="search-box" role="dialog" aria-label="Recherche globale">
+            <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-input" placeholder="Membres, compétences, snippets, articles, fiches…" autocomplete="off">
+                <kbd>Échap</kbd>
             </div>
-        </section>
+            <div class="search-results" id="search-results"></div>
+            <div class="search-foot"><kbd>↑</kbd><kbd>↓</kbd> naviguer · <kbd>↵</kbd> ouvrir · <kbd>Échap</kbd> fermer</div>
+        </div>
+    </div>
 
-    </main>
-
-    <!-- Modal for Submitting New Project Incident -->
+    <!-- ============================== MODALS ============================== -->
     <div id="submit-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-kit-medical"></i> Soumettre un problème pour la Clinique Tech</h3>
-                <button class="close-modal">&times;</button>
-            </div>
+            <div class="modal-header"><h3><i class="fa-solid fa-triangle-exclamation"></i> Soumettre un cas à la Clinique</h3><button class="close-modal">&times;</button></div>
             <form id="incident-form">
-                <div class="form-group">
-                    <label>Titre du problème / Blocage projet</label>
-                    <input type="text" id="inc-title" placeholder="ex: Erreur de synchro Data Cloud sur les objets DMO Custom" required>
-                </div>
-                <div class="form-group">
-                    <label>Description du symptôme</label>
-                    <textarea id="inc-desc" rows="3" placeholder="Expliquez ce qui ne fonctionne pas et le contexte du projet..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Techno concernée</label>
+                <div class="form-group"><label>Titre du blocage</label><input type="text" id="inc-title" placeholder="ex: Timeout SSJS purge DE SFMC" required></div>
+                <div class="form-group"><label>Description</label><textarea id="inc-desc" rows="3" placeholder="Contexte, ce qui a déjà été tenté…" required></textarea></div>
+                <div class="form-group"><label>Technologie</label>
                     <select id="inc-tech" required>
-                        <option value="SFMC">Salesforce Marketing Cloud Engagement / Next</option>
-                        <option value="DataCloud">Salesforce Data Cloud</option>
-                        <option value="Agentforce">Agentforce / MCP</option>
-                        <option value="Imagino">Imagino CDP / Campaign</option>
-                        <option value="Snowflake">Snowflake</option>
-                        <option value="GCP">GCP (BigQuery / GCS)</option>
-                        <option value="dbt">dbt / Airflow</option>
+                        <option value="SFMC">SFMC</option><option value="DataCloud">Data Cloud</option><option value="MCP">Agentforce / MCP</option>
+                        <option value="Imagino">Imagino</option><option value="GCP">GCP / BigQuery</option><option value="Snowflake">Snowflake</option><option value="dbt">dbt / Airflow</option>
                     </select>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline close-modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Ajouter à l'ordre du jour</button>
-                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-outline close-modal">Annuler</button><button type="submit" class="btn btn-primary">Publier le cas</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Add User Modal -->
     <div id="add-user-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-user-plus"></i> Ajouter un membre à la Guilde LineUp7</h3>
-                <button class="close-modal">&times;</button>
-            </div>
+            <div class="modal-header"><h3><i class="fa-solid fa-user-plus"></i> Ajouter un membre à la Guilde</h3><button class="close-modal">&times;</button></div>
             <form id="add-user-form">
-                <div class="form-group">
-                    <label>Nom & Initiale (ex: Nicolas.D)</label>
-                    <input type="text" id="new-user-name" placeholder="ex: Nicolas.D" required>
-                </div>
-                <div class="form-group">
-                    <label>Rôle / Intitulé de poste LineUp7</label>
-                    <input type="text" id="new-user-role" placeholder="ex: Data Engineer / MarTech Specialist" required>
-                </div>
-                <div class="form-group">
-                    <label>Compétences principales (séparées par virgule)</label>
-                    <input type="text" id="new-user-skills" placeholder="ex: SFMC Core, GCP, dbt">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline close-modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Ajouter le membre</button>
-                </div>
+                <div class="form-group"><label>Nom</label><input type="text" id="new-user-name" placeholder="ex: Nicolas.D" required></div>
+                <div class="form-group"><label>Rôle</label><input type="text" id="new-user-role" placeholder="ex: Data Engineer / MarTech Specialist" required></div>
+                <div class="form-group"><label>Compétences initiales (optionnel, séparées par des virgules)</label><input type="text" id="new-user-skills" placeholder="ex: sfmc-ampscript, gcp-bigquery, dbt-modeling"></div>
+                <div class="modal-footer"><button type="button" class="btn btn-outline close-modal">Annuler</button><button type="submit" class="btn btn-primary">Créer le membre</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Add Snippet Modal -->
     <div id="add-snippet-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-code"></i> Ajouter un Snippet au Vault</h3>
-                <button class="close-modal">&times;</button>
-            </div>
+            <div class="modal-header"><h3><i class="fa-solid fa-code"></i> Publier un snippet</h3><button class="close-modal">&times;</button></div>
             <form id="add-snippet-form">
-                <div class="form-group">
-                    <label>Titre du Snippet</label>
-                    <input type="text" id="new-snip-title" placeholder="ex: Script AMPscript Lookup DE Dynamique" required>
-                </div>
-                <div class="form-group">
-                    <label>Catégorie / Techno</label>
+                <div class="form-group"><label>Titre</label><input type="text" id="new-snip-title" placeholder="ex: AMPscript Lookup DE dynamique" required></div>
+                <div class="form-group"><label>Catégorie</label>
                     <select id="new-snip-cat" required>
-                        <option value="SFMC">SFMC (AMPscript / SSJS)</option>
-                        <option value="DataCloud">Salesforce Data Cloud</option>
-                        <option value="MCP">Agentforce / MCP</option>
-                        <option value="Imagino">Imagino CDP / Campaign</option>
-                        <option value="GCP">GCP (BigQuery / GCS)</option>
-                        <option value="Snowflake">Snowflake</option>
-                        <option value="dbt">dbt / Airflow</option>
+                        <option value="SFMC">SFMC</option><option value="DataCloud">Data Cloud</option><option value="MCP">MCP</option>
+                        <option value="GCP">GCP</option><option value="dbt">dbt</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Description courte</label>
-                    <input type="text" id="new-snip-desc" placeholder="ex: Script de déduplication SQL pour la purge..." required>
-                </div>
-                <div class="form-group">
-                    <label>Code (SQL, SSJS, AMPscript, Python, JSON...)</label>
-                    <textarea id="new-snip-code" rows="5" placeholder="Collez votre code ici..." required style="font-family: monospace; font-size: 0.8rem;"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline close-modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Enregistrer le Snippet</button>
-                </div>
+                <div class="form-group"><label>Description</label><input type="text" id="new-snip-desc" placeholder="À quoi sert ce snippet ?" required></div>
+                <div class="form-group"><label>Code</label><textarea id="new-snip-code" rows="6" placeholder="Collez votre code ici…" required style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;"></textarea></div>
+                <div class="modal-footer"><button type="button" class="btn btn-outline close-modal">Annuler</button><button type="submit" class="btn btn-primary">Ajouter au Vault</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Add Article Modal -->
     <div id="add-article-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i> Rédiger un Article Tech (Markdown)</h3>
-                <button class="close-modal">&times;</button>
-            </div>
+            <div class="modal-header"><h3><i class="fa-brands fa-linkedin" style="color:#0a66c2;"></i> Rédiger un article (Markdown)</h3><button class="close-modal">&times;</button></div>
             <form id="add-article-form">
-                <div class="form-group">
-                    <label>Titre de l'Article</label>
-                    <input type="text" id="new-art-title" placeholder="ex: Pourquoi le Model Context Protocol (MCP) redéfinit l'architecture MarTech en 2026" required>
+                <div class="form-group"><label>Titre</label><input type="text" id="new-art-title" placeholder="ex: Pourquoi le MCP redéfinit l'architecture MarTech" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Tags</label><input type="text" id="new-art-tag" placeholder="ex: #Agentforce #MCP #Salesforce" required></div>
+                    <div class="form-group"><label>Temps de lecture</label><input type="text" id="new-art-time" value="4 min" required></div>
                 </div>
-                <div class="form-group">
-                    <label>Technologie / Tag principal</label>
-                    <input type="text" id="new-art-tag" placeholder="ex: #Agentforce #MCP #Salesforce" required>
-                </div>
-                <div class="form-group">
-                    <label>Temps de lecture estimé</label>
-                    <input type="text" id="new-art-time" placeholder="ex: 4 min" value="4 min" required>
-                </div>
-                <div class="form-group">
-                    <label>Contenu de l'Article (Markdown)</label>
-                    <textarea id="new-art-content" rows="8" placeholder="Écrivez votre article en Markdown (titres #, puces -, code ```)..." required style="font-family: monospace; font-size: 0.82rem;"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline close-modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Publier dans la Guilde</button>
-                </div>
+                <div class="form-group"><label>Contenu (Markdown : titres #, puces -, code ```)</label><textarea id="new-art-content" rows="9" placeholder="Écrivez votre article en Markdown…" required style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;"></textarea></div>
+                <div class="modal-footer"><button type="button" class="btn btn-outline close-modal">Annuler</button><button type="submit" class="btn btn-primary">Publier l'article</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Article Reader Modal -->
     <div id="article-reader-modal" class="modal">
-        <div class="modal-content" style="max-width: 750px;">
-            <div class="modal-header">
-                <h3 id="reader-article-title"><i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i> Lecture Article Tech</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body" id="reader-article-body">
-                <!-- Injected via JS -->
-            </div>
+        <div class="modal-content" style="max-width: 720px;">
+            <div class="modal-header"><h3 id="reader-article-title"><i class="fa-brands fa-linkedin" style="color:#0a66c2;"></i> Lecture</h3><button class="close-modal">&times;</button></div>
+            <div class="modal-body" id="reader-article-body"><!-- JS --></div>
         </div>
     </div>
 
-    <!-- Skill Node Inspector Modal -->
     <div id="node-modal" class="modal">
         <div class="modal-content" style="max-width: 640px;">
-            <div class="modal-header">
-                <h3 id="node-modal-title"><i class="fa-solid fa-microchip"></i> Compétence</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body" id="node-modal-body">
-                <!-- Injected via JS -->
-            </div>
+            <div class="modal-header"><h3 id="node-modal-title"><i class="fa-solid fa-microchip"></i> Compétence</h3><button class="close-modal">&times;</button></div>
+            <div class="modal-body" id="node-modal-body"><!-- JS --></div>
         </div>
     </div>
 
-    <!-- Squad Member Detail Modal -->
     <div id="user-detail-modal" class="modal">
         <div class="modal-content" style="max-width: 640px;">
-            <div class="modal-header">
-                <h3 id="user-detail-modal-title"><i class="fa-solid fa-id-card"></i> Profil Squad</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body" id="user-detail-modal-body">
-                <!-- Injected via JS -->
-            </div>
+            <div class="modal-header"><h3 id="user-detail-modal-title"><i class="fa-solid fa-id-card"></i> Profil Squad</h3><button class="close-modal">&times;</button></div>
+            <div class="modal-body" id="user-detail-modal-body"><!-- JS --></div>
         </div>
     </div>
 
     <script src="app.js"></script>
+    <script>
+        // PWA — service worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('sw.js').catch(function (err) {
+                    console.warn('SW registration failed:', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>

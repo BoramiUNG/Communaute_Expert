@@ -36,6 +36,108 @@
         return name.substring(0, 2).toUpperCase();
     }
 
+    const prefersReducedMotion = () =>
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function timeAgo(ts) {
+        const s = Math.floor((Date.now() - ts) / 1000);
+        if (s < 45) return "à l'instant";
+        const m = Math.floor(s / 60);
+        if (m < 60) return `il y a ${m} min`;
+        const h = Math.floor(m / 60);
+        if (h < 24) return `il y a ${h} h`;
+        const d = Math.floor(h / 24);
+        if (d < 7) return `il y a ${d} j`;
+        return new Date(ts).toLocaleDateString('fr-FR');
+    }
+
+    // Animated number counter (respects reduced-motion)
+    function animateCounter(el, target, opts = {}) {
+        if (!el) return;
+        const suffix = opts.suffix || '';
+        const fmt = (v) => v.toLocaleString('fr-FR') + suffix;
+        if (prefersReducedMotion()) { el.textContent = fmt(target); return; }
+        const dur = opts.dur || 900;
+        const from = 0;
+        const start = performance.now();
+        function tick(now) {
+            const t = Math.min(1, (now - start) / dur);
+            const eased = 1 - Math.pow(1 - t, 3);
+            el.textContent = fmt(Math.round(from + (target - from) * eased));
+            if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    }
+
+    // Lightweight confetti burst (badge unlocks)
+    function confettiBurst() {
+        if (prefersReducedMotion()) return;
+        const canvas = document.createElement('canvas');
+        canvas.className = 'confetti-canvas';
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        const colors = ['#32ac5c', '#f59e0b', '#06b6d4', '#8b5cf6', '#ef4444', '#43c470'];
+        const parts = Array.from({ length: 130 }, () => ({
+            x: canvas.width / 2 + (Math.random() - 0.5) * 260,
+            y: canvas.height * 0.28 + (Math.random() - 0.5) * 60,
+            r: 4 + Math.random() * 6,
+            c: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 9,
+            vy: -4 - Math.random() * 8,
+            rot: Math.random() * Math.PI,
+            vr: (Math.random() - 0.5) * 0.4
+        }));
+        let frame = 0;
+        (function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            parts.forEach((p) => {
+                p.x += p.vx; p.y += p.vy; p.vy += 0.28; p.rot += p.vr;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+                ctx.fillStyle = p.c;
+                ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.62);
+                ctx.restore();
+            });
+            frame++;
+            if (frame < 170) requestAnimationFrame(draw);
+            else canvas.remove();
+        })();
+    }
+
+    // ======================================================================
+    // Feed — unified events store (activity feed + notifications), persisted
+    // ======================================================================
+    const Feed = (function () {
+        const KEY = 'lineup7_v2_feed';
+        function read() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } }
+        function write(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} }
+        let events = read();
+        if (!events.length) {
+            const now = Date.now();
+            events = [
+                { id: uid('ev'), type: 'badge', title: 'Nouveau badge disponible', msg: 'Débloquez « Premiers Pas » en déclarant une compétence.', ts: now - 1000 * 60 * 30, read: false },
+                { id: uid('ev'), type: 'clinique', title: 'Clinique Tech', msg: '3 cas ouverts attendent un Helper.', ts: now - 1000 * 60 * 90, read: false },
+                { id: uid('ev'), type: 'xp', title: 'Bienvenue sur le Guild Hub', msg: 'Explorez le Skill Tree, la Matrice et le Vault ✨', ts: now - 1000 * 60 * 60 * 3, read: true }
+            ];
+            write(events);
+        }
+        return {
+            push(type, title, msg, opts = {}) {
+                const ev = { id: uid('ev'), type, title, msg, ts: Date.now(), read: !!opts.read };
+                events.unshift(ev);
+                if (events.length > 60) events = events.slice(0, 60);
+                write(events);
+                return ev;
+            },
+            all() { return events; },
+            unread() { return events.filter((e) => !e.read).length; },
+            markAllRead() { events.forEach((e) => { e.read = true; }); write(events); }
+        };
+    })();
+
     // ======================================================================
     // 1. Toast notifications (replaces alert())
     // ======================================================================
@@ -410,10 +512,13 @@ FROM {{ ref('stg_imagino_users') }}
     function checkBadges(user, prevIds) {
         const nowIds = earnedBadges(user).map(b => b.id);
         const fresh = nowIds.filter(id => !prevIds.includes(id));
+        if (fresh.length && user.id === Store.getCurrentUserId()) confettiBurst();
         fresh.forEach(id => {
             const b = BADGES.find(x => x.id === id);
             Toast.badge(`<strong>${b.name}</strong> — ${b.desc}`, { title: '🏆 Badge débloqué !' });
+            Feed.push('badge', `Badge débloqué : ${b.name}`, b.desc, { read: false });
         });
+        if (fresh.length) refreshFeedUI();
         return fresh;
     }
 
@@ -428,8 +533,11 @@ FROM {{ ref('stg_imagino_users') }}
         renderLeaderboard();
         if (amount > 0 && reason) {
             Toast.xp(`+${amount} XP — ${reason}`);
+            Feed.push('xp', `+${amount} XP`, reason, { read: true });
+            refreshFeedUI();
         }
         checkBadges(user, prevBadges);
+        if ($('#tab-dashboard').classList.contains('active')) renderDashboard();
     }
 
     // ======================================================================
@@ -504,8 +612,10 @@ FROM {{ ref('stg_imagino_users') }}
     function activateTab(tabId) {
         $$('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
         $$('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tabId}`));
-        const nav = $('#mobile-nav');
-        if (nav) nav.classList.remove('open');
+        const shell = $('#app-shell');
+        if (shell) shell.classList.remove('sidebar-open'); // close mobile drawer on nav
+        if (tabId === 'dashboard') renderDashboard();
+        if (tabId === 'analytics') renderAnalytics();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -515,8 +625,48 @@ FROM {{ ref('stg_imagino_users') }}
             const sw = e.target.closest('.switch-tab');
             if (sw) { e.preventDefault(); activateTab(sw.getAttribute('data-target')); }
         });
-        const burger = $('#nav-burger');
-        if (burger) burger.addEventListener('click', () => $('.nav-links').classList.toggle('open'));
+    }
+
+    // ======================================================================
+    // 8b. Sidebar (mobile drawer + desktop collapse, persisted)
+    // ======================================================================
+    function initSidebar() {
+        const shell = $('#app-shell');
+        const burger = $('#sidebar-toggle');
+        const collapse = $('#sidebar-collapse');
+        const scrim = $('#sidebar-scrim');
+        if (burger) burger.addEventListener('click', () => shell.classList.toggle('sidebar-open'));
+        if (scrim) scrim.addEventListener('click', () => shell.classList.remove('sidebar-open'));
+        if (collapse) collapse.addEventListener('click', () => {
+            shell.classList.toggle('sidebar-collapsed');
+            try { localStorage.setItem('lineup7_v2_sidebar', shell.classList.contains('sidebar-collapsed') ? 'collapsed' : 'open'); } catch (e) {}
+        });
+        // Restore persisted collapse state (desktop only)
+        try {
+            if (localStorage.getItem('lineup7_v2_sidebar') === 'collapsed') shell.classList.add('sidebar-collapsed');
+        } catch (e) {}
+    }
+
+    // ======================================================================
+    // 8c. Theme toggle (light / dark, persisted)
+    // ======================================================================
+    function applyTheme(theme) {
+        document.body.classList.toggle('theme-light', theme === 'light');
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', theme === 'light' ? '#eef2f8' : '#0f172a');
+    }
+    function initTheme() {
+        const KEY = 'lineup7_v2_theme';
+        let theme = 'dark';
+        try { theme = localStorage.getItem(KEY) || 'dark'; } catch (e) {}
+        applyTheme(theme);
+        const btn = $('#theme-toggle');
+        if (btn) btn.addEventListener('click', () => {
+            theme = document.body.classList.contains('theme-light') ? 'dark' : 'light';
+            applyTheme(theme);
+            try { localStorage.setItem(KEY, theme); } catch (e) {}
+            Toast.info(theme === 'light' ? 'Thème clair activé ☀️' : 'Thème sombre activé 🌙');
+        });
     }
 
     // ======================================================================
@@ -699,7 +849,7 @@ FROM {{ ref('stg_imagino_users') }}
         const btnOpen = $('#btn-open-submit-modal');
         const form = $('#incident-form');
         const container = $('#incidents-container');
-        const countBadge = $('#active-incidents-count');
+        const countBadge = $('#nav-clinique-count');
 
         if (btnOpen) btnOpen.addEventListener('click', () => openModal('submit-modal'));
 
@@ -1248,6 +1398,386 @@ FROM {{ ref('stg_imagino_users') }}
     }
 
     // ======================================================================
+    // 18b. Dashboard
+    // ======================================================================
+    function renderDashboard() {
+        const user = Store.getCurrentUser();
+        const users = Store.getUsers();
+        const level = Store.level(user);
+
+        const greetEl = $('#dash-greeting');
+        if (greetEl) {
+            const h = new Date().getHours();
+            const g = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
+            greetEl.textContent = `${g}, ${user.name.split('.')[0]} 👋`;
+        }
+
+        const earned = earnedBadges(user).length;
+        const openIncidents = $$('#incidents-container .incident-card').length;
+        const stats = [
+            { icon: 'fa-bolt', accent: '', value: level, suffix: '', label: 'Votre niveau', trend: `${user.xp.toLocaleString('fr-FR')} XP cumulés` },
+            { icon: 'fa-award', accent: 'accent-gold', value: earned, suffix: `/${BADGES.length}`, label: 'Badges débloqués' },
+            { icon: 'fa-users', accent: 'accent-purple', value: users.length, suffix: '', label: 'Membres de la Guilde' },
+            { icon: 'fa-code', accent: 'accent-cyan', value: Store.getSnippets().length, suffix: '', label: 'Snippets au Vault' },
+            { icon: 'fa-kit-medical', accent: 'accent-rose', value: openIncidents, suffix: '', label: 'Cas Clinique ouverts' }
+        ];
+        const statGrid = $('#dash-stats');
+        if (statGrid) {
+            statGrid.innerHTML = stats.map(s => `
+                <div class="stat-card ${s.accent}">
+                    <div class="stat-icon"><i class="fa-solid ${s.icon}"></i></div>
+                    <div class="stat-value">0${s.suffix || ''}</div>
+                    <div class="stat-label">${s.label}</div>
+                    ${s.trend ? `<div class="stat-trend"><i class="fa-solid fa-arrow-trend-up"></i> ${s.trend}</div>` : ''}
+                </div>`).join('');
+            $$('.stat-value', statGrid).forEach((el, i) => animateCounter(el, stats[i].value, { suffix: stats[i].suffix || '' }));
+        }
+
+        const prog = $('#dash-progress');
+        if (prog) {
+            const pct = user.xp % 100;
+            prog.innerHTML = `
+                <div class="dash-progress-hero">
+                    <div class="level-ring" style="--pct:${pct}"><div style="text-align:center"><b>${level}</b><small>niveau</small></div></div>
+                    <div class="dash-progress-meta">
+                        <div class="xp-line"><span>${user.xp.toLocaleString('fr-FR')} XP au total</span><strong>${pct} / 100</strong></div>
+                        <div class="xp-progress-track"><div class="xp-progress-fill" id="dash-xp-fill"></div></div>
+                        <span class="xp-progress-label">Plus que <strong>${100 - pct} XP</strong> pour atteindre le niveau ${level + 1}</span>
+                    </div>
+                </div>`;
+            requestAnimationFrame(() => { const f = $('#dash-xp-fill'); if (f) f.style.width = pct + '%'; });
+        }
+
+        const clinique = $('#dash-clinique');
+        if (clinique) {
+            const cards = $$('#incidents-container .incident-card').slice(0, 3);
+            clinique.innerHTML = cards.length ? cards.map(c => {
+                const title = (c.querySelector('.incident-title') || {}).textContent || '';
+                const author = (c.querySelector('.author span') || {}).textContent || '';
+                const urgent = c.classList.contains('urgent');
+                return `<div class="mini-item"><span class="mini-dot" style="color:${urgent ? 'var(--rose)' : 'var(--gold)'}"></span><div class="mini-body"><div class="mini-title">${escapeHtml(title)}</div><div class="mini-sub">${escapeHtml(author)}</div></div></div>`;
+            }).join('') : '<p class="empty-hint">Aucun cas ouvert. Tout roule ✨</p>';
+        }
+
+        const artC = $('#dash-articles');
+        if (artC) {
+            const arts = Store.getArticles().slice(0, 3);
+            if (!arts.length) artC.innerHTML = '<p class="empty-hint">Aucun article publié.</p>';
+            else {
+                artC.innerHTML = arts.map(a => `<div class="mini-item" data-art="${a.id}"><div class="avatar-sm primary">${a.authorAvatar}</div><div class="mini-body"><div class="mini-title">${escapeHtml(a.title)}</div><div class="mini-sub">${escapeHtml(a.author)} · ${escapeHtml(a.readTime)} · <i class="fa-regular fa-heart"></i> ${a.likes}</div></div></div>`).join('');
+                $$('.mini-item[data-art]', artC).forEach(el => el.addEventListener('click', () => {
+                    const art = Store.getArticles().find(a => a.id === el.getAttribute('data-art'));
+                    if (art) openArticleReader(art);
+                }));
+            }
+        }
+
+        const nb = $('#dash-next-badges');
+        if (nb) {
+            const earnedSet = new Set(earnedBadges(user).map(b => b.id));
+            const candidates = BADGES.filter(b => !earnedSet.has(b.id) && b.progress)
+                .map(b => { const p = b.progress(user); return { b, pct: Math.round((p.current / p.target) * 100), p }; })
+                .sort((a, z) => z.pct - a.pct).slice(0, 3);
+            nb.innerHTML = candidates.length ? candidates.map(({ b, pct, p }) => `
+                <div class="next-badge-row">
+                    <div class="next-badge-ic"><i class="fa-solid ${b.icon}"></i></div>
+                    <div class="nb-body"><div class="nb-name">${escapeHtml(b.name)}</div><div class="nb-bar"><div class="nb-fill" style="width:${pct}%"></div></div></div>
+                    <span class="nb-count">${p.current}/${p.target}</span>
+                </div>`).join('') : '<p class="empty-hint">Tous les badges à progression sont débloqués 🎉</p>';
+        }
+
+        renderActivity();
+    }
+
+    function renderActivity() {
+        const feed = $('#dash-activity');
+        if (!feed) return;
+        const icons = { xp: 'fa-bolt', badge: 'fa-award', clinique: 'fa-kit-medical', article: 'fa-newspaper', snippet: 'fa-code', info: 'fa-circle-info' };
+        const events = Feed.all().slice(0, 7);
+        feed.innerHTML = events.length ? events.map(e => `
+            <div class="activity-item">
+                <div class="activity-ic"><i class="fa-solid ${icons[e.type] || 'fa-circle-info'}"></i></div>
+                <div class="act-body"><strong style="font-weight:700;">${escapeHtml(e.title)}</strong><div style="color:var(--text-muted);">${escapeHtml(e.msg)}</div><div class="act-time">${timeAgo(e.ts)}</div></div>
+            </div>`).join('') : '<p class="empty-hint">Aucune activité récente.</p>';
+    }
+
+    function initDashboard() {
+        const btn = $('#dash-quick-article');
+        if (btn) btn.addEventListener('click', () => { activateTab('blog'); openArticleEditor(null); });
+    }
+
+    // ======================================================================
+    // 18c. Notifications
+    // ======================================================================
+    function refreshFeedUI() {
+        renderNotifBell();
+        renderNotifPanel();
+        const dash = $('#tab-dashboard');
+        if (dash && dash.classList.contains('active')) renderActivity();
+    }
+    function renderNotifBell() {
+        const count = Feed.unread();
+        const dot = $('#notif-count');
+        const bell = $('#notif-bell');
+        if (dot) { dot.textContent = count; dot.hidden = count === 0; }
+        if (bell) bell.classList.toggle('has-unread', count > 0);
+    }
+    function renderNotifPanel() {
+        const list = $('#notif-list');
+        if (!list) return;
+        const icons = { xp: 'fa-bolt', badge: 'fa-award', clinique: 'fa-kit-medical', article: 'fa-newspaper', snippet: 'fa-code', info: 'fa-circle-info' };
+        const events = Feed.all().slice(0, 20);
+        list.innerHTML = events.length ? events.map(e => `
+            <div class="notif-entry type-${e.type} ${e.read ? '' : 'unread'}">
+                <div class="notif-entry-ic"><i class="fa-solid ${icons[e.type] || 'fa-circle-info'}"></i></div>
+                <div class="notif-entry-body">
+                    <div class="notif-entry-title">${escapeHtml(e.title)}</div>
+                    <div class="notif-entry-msg">${escapeHtml(e.msg)}</div>
+                    <div class="notif-entry-time">${timeAgo(e.ts)}</div>
+                </div>
+            </div>`).join('') : '<p class="empty-hint" style="padding:1rem;">Aucune notification.</p>';
+    }
+    function initNotifications() {
+        const bell = $('#notif-bell');
+        const panel = $('#notif-panel');
+        const mark = $('#notif-mark-read');
+        if (bell && panel) bell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            panel.hidden = !panel.hidden;
+            if (!panel.hidden) renderNotifPanel();
+        });
+        if (mark) mark.addEventListener('click', () => { Feed.markAllRead(); refreshFeedUI(); });
+        document.addEventListener('click', (e) => {
+            if (panel && !panel.hidden && !panel.contains(e.target) && !e.target.closest('#notif-bell')) panel.hidden = true;
+        });
+        renderNotifBell();
+    }
+
+    // ======================================================================
+    // 18d. Guild Analytics
+    // ======================================================================
+    const RADAR_AXES = [
+        { label: 'SFMC', keys: ['sfmc-ampscript', 'sfmc-ssjs-sql', 'sfmc-deliverability', 'sfmc-next-flows'] },
+        { label: 'Data Cloud', keys: ['sf-datacloud-dmo', 'sf-datacloud-insights'] },
+        { label: 'Agentforce', keys: ['agentforce-ia', 'agentforce-mcp'] },
+        { label: 'Imagino', keys: ['imagino-cdp', 'imagino-campaign'] },
+        { label: 'Data Stack', keys: ['gcp-bigquery', 'snowflake-data', 'dbt-modeling', 'airflow-pipelines'] },
+        { label: 'Audit', keys: ['martech-audit'] }
+    ];
+    function skillScore(user, key) { const l = user.skills[key]; return l === 'Expert' ? 3 : l === 'Confirmé' ? 2 : l === 'En Apprentissage' ? 1 : 0; }
+    function axisScore(user, axis) { return axis.keys.reduce((s, k) => s + skillScore(user, k), 0) / axis.keys.length; }
+
+    function radarSvg(user) {
+        const cx = 170, cy = 155, R = 115, n = RADAR_AXES.length;
+        const angleFor = i => -Math.PI / 2 + i * 2 * Math.PI / n;
+        let rings = '';
+        for (let lvl = 1; lvl <= 3; lvl++) {
+            const r = (lvl / 3) * R;
+            const pts = RADAR_AXES.map((_, i) => `${(cx + r * Math.cos(angleFor(i))).toFixed(1)},${(cy + r * Math.sin(angleFor(i))).toFixed(1)}`).join(' ');
+            rings += `<polygon class="radar-grid-line" points="${pts}" />`;
+        }
+        let spokes = '', labels = '';
+        RADAR_AXES.forEach((ax, i) => {
+            const a = angleFor(i);
+            const x = cx + R * Math.cos(a), y = cy + R * Math.sin(a);
+            spokes += `<line class="radar-grid-line" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;
+            const lx = cx + (R + 20) * Math.cos(a), ly = cy + (R + 20) * Math.sin(a);
+            const anchor = Math.abs(Math.cos(a)) < 0.3 ? 'middle' : (Math.cos(a) > 0 ? 'start' : 'end');
+            labels += `<text class="radar-axis-label" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle">${ax.label}</text>`;
+        });
+        const dataPts = RADAR_AXES.map((ax, i) => {
+            const r = (axisScore(user, ax) / 3) * R;
+            return [cx + r * Math.cos(angleFor(i)), cy + r * Math.sin(angleFor(i))];
+        });
+        const poly = dataPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+        const dots = dataPts.map(p => `<circle class="radar-dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" />`).join('');
+        return `<svg class="radar-svg" viewBox="0 0 340 320" role="img" aria-label="Radar de compétences de ${escapeHtml(user.name)}">${rings}${spokes}<polygon class="radar-poly" points="${poly}" />${dots}${labels}</svg>`;
+    }
+
+    function renderAnalytics() {
+        const users = Store.getUsers();
+
+        const kpis = $('#analytics-kpis');
+        const coverageAvg = Math.round(RADAR_AXES.reduce((s, ax) => s + users.reduce((u2, u) => u2 + axisScore(u, ax) / 3, 0) / users.length, 0) / RADAR_AXES.length * 100);
+        const spofCount = TECH_KEYS.filter(t => users.filter(u => u.skills[t.key] === 'Expert').length <= 1).length;
+        if (kpis) {
+            const cards = [
+                { icon: 'fa-users', accent: 'accent-purple', value: users.length, suffix: '', label: 'Membres actifs' },
+                { icon: 'fa-diagram-project', accent: '', value: TECH_KEYS.length, suffix: '', label: 'Compétences suivies' },
+                { icon: 'fa-gauge-high', accent: 'accent-cyan', value: coverageAvg, suffix: '%', label: 'Maîtrise moyenne' },
+                { icon: 'fa-shield-halved', accent: 'accent-rose', value: spofCount, suffix: '', label: 'Compétences fragiles (SPOF)' }
+            ];
+            kpis.innerHTML = cards.map(c => `
+                <div class="stat-card ${c.accent}">
+                    <div class="stat-icon"><i class="fa-solid ${c.icon}"></i></div>
+                    <div class="stat-value">0${c.suffix || ''}</div>
+                    <div class="stat-label">${c.label}</div>
+                </div>`).join('');
+            $$('.stat-value', kpis).forEach((el, i) => animateCounter(el, cards[i].value, { suffix: cards[i].suffix || '' }));
+        }
+
+        const sel = $('#radar-member-select');
+        const container = $('#radar-container');
+        if (sel && container) {
+            if (!sel.options.length) {
+                sel.innerHTML = users.map(u => `<option value="${u.id}">${escapeHtml(u.name)} — ${escapeHtml(u.role)}</option>`).join('');
+                sel.value = Store.getCurrentUserId();
+                sel.addEventListener('change', () => {
+                    const u = Store.getUser(sel.value);
+                    if (u) container.innerHTML = radarSvg(u);
+                });
+            }
+            const u = Store.getUser(sel.value) || Store.getCurrentUser();
+            container.innerHTML = radarSvg(u);
+        }
+
+        const spofEl = $('#spof-list');
+        if (spofEl) {
+            const rows = TECH_KEYS.map(t => {
+                const experts = users.filter(u => u.skills[t.key] === 'Expert');
+                let flag;
+                if (experts.length === 0) flag = { c: 'risk', txt: 'Aucun expert' };
+                else if (experts.length === 1) flag = { c: 'risk', txt: '1 expert' };
+                else if (experts.length === 2) flag = { c: 'warn', txt: '2 experts' };
+                else flag = { c: 'ok', txt: experts.length + ' experts' };
+                return { t, experts, flag, risk: experts.length <= 1 ? 0 : experts.length === 2 ? 1 : 2 };
+            }).sort((a, z) => a.risk - z.risk);
+            spofEl.innerHTML = rows.map(r => `
+                <div class="spof-item">
+                    <span class="spof-name">${escapeHtml(r.t.label)}</span>
+                    <span class="spof-holders">${r.experts.map(e => escapeHtml(e.avatar)).join(' ') || '—'}</span>
+                    <span class="spof-flag ${r.flag.c}">${r.flag.txt}</span>
+                </div>`).join('');
+        }
+
+        const heat = $('#skills-heatmap');
+        if (heat) {
+            const cols = RADAR_AXES.length;
+            let html = `<div class="heatmap-grid" style="grid-template-columns: 120px repeat(${cols}, minmax(46px,1fr));">`;
+            html += `<div class="heat-label"></div>`;
+            RADAR_AXES.forEach(ax => { html += `<div class="heat-label" style="justify-content:center;font-size:0.6rem;text-align:center;">${escapeHtml(ax.label)}</div>`; });
+            users.forEach(u => {
+                html += `<div class="heat-label"><div class="avatar-sm" style="margin-right:0.4rem;width:22px;height:22px;font-size:0.6rem;">${u.avatar}</div>${escapeHtml(u.name)}</div>`;
+                RADAR_AXES.forEach(ax => {
+                    const sc = axisScore(u, ax);
+                    const bucket = sc === 0 ? 0 : sc <= 1 ? 1 : sc <= 2 ? 2 : 3;
+                    html += `<div class="heat-cell heat-${bucket}" title="${escapeHtml(ax.label)} : ${sc.toFixed(1)}/3">${sc ? sc.toFixed(1) : ''}</div>`;
+                });
+            });
+            html += '</div>';
+            heat.innerHTML = html;
+        }
+
+        const cov = $('#coverage-list');
+        if (cov) {
+            cov.innerHTML = RADAR_AXES.map(ax => {
+                const pct = Math.round(users.reduce((s, u) => s + axisScore(u, ax) / 3, 0) / users.length * 100);
+                return `<div class="coverage-item"><div class="coverage-top"><span>${escapeHtml(ax.label)}</span><strong>${pct}%</strong></div><div class="coverage-bar"><div class="coverage-fill" style="width:${pct}%"></div></div></div>`;
+            }).join('');
+        }
+    }
+
+    // ======================================================================
+    // 18e. Command palette / global search
+    // ======================================================================
+    let searchState = { filtered: [], active: 0 };
+    const KIND_ORDER = ['Navigation', 'Membre', 'Compétence', 'Snippet', 'Article'];
+
+    function buildSearchIndex() {
+        const idx = [];
+        const navs = [
+            ['dashboard', 'Accueil', 'fa-gauge-high'], ['analytics', 'Guild Analytics', 'fa-chart-pie'],
+            ['karma', 'Squad & Badges', 'fa-trophy'], ['skill-tree', 'Skill Tree', 'fa-sitemap'],
+            ['talent-matrix', 'Matrice des Talents', 'fa-table-cells'], ['snippet-vault', 'Snippet Vault', 'fa-code'],
+            ['clinique', 'Clinique Tech', 'fa-kit-medical'], ['master-index', 'Master Index', 'fa-database'],
+            ['quests', 'Quêtes', 'fa-scroll'], ['blog', 'Blog & LinkedIn', 'fa-newspaper']
+        ];
+        navs.forEach(([tab, label, icon]) => idx.push({ kind: 'Navigation', title: label, meta: 'Ouvrir la section', icon, action: () => activateTab(tab) }));
+        Store.getUsers().forEach(u => idx.push({ kind: 'Membre', title: u.name, meta: u.role, icon: 'fa-user', action: () => { activateTab('karma'); openUserDetailModal(u); } }));
+        Object.keys(nodeDetails).forEach(k => idx.push({ kind: 'Compétence', title: nodeDetails[k].title, meta: nodeDetails[k].desc, icon: 'fa-microchip', action: () => { activateTab('skill-tree'); openNodeInspector(k); } }));
+        Store.getSnippets().forEach(s => idx.push({ kind: 'Snippet', title: s.title, meta: '#' + s.category + ' · ' + s.desc, icon: 'fa-code', action: () => activateTab('snippet-vault') }));
+        Store.getArticles().forEach(a => idx.push({ kind: 'Article', title: a.title, meta: a.author + ' · ' + a.readTime, icon: 'fa-newspaper', action: () => { activateTab('blog'); openArticleReader(a); } }));
+        return idx;
+    }
+
+    function renderSearchResults(q) {
+        const results = $('#search-results');
+        if (!results) return;
+        const index = buildSearchIndex();
+        const query = (q || '').trim().toLowerCase();
+        let list = query ? index.filter(it => (it.title + ' ' + it.meta + ' ' + it.kind).toLowerCase().includes(query)) : index;
+        list.sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
+        list = list.slice(0, 24);
+        searchState.filtered = list;
+        searchState.active = 0;
+        if (!list.length) { results.innerHTML = `<div class="empty-hint" style="padding:1.25rem;text-align:center;">Aucun résultat pour « ${escapeHtml(q)} »</div>`; return; }
+        let html = '', lastKind = null;
+        list.forEach((it, i) => {
+            if (it.kind !== lastKind) { html += `<div class="search-group-label">${it.kind}</div>`; lastKind = it.kind; }
+            html += `<div class="search-result-item ${i === 0 ? 'is-active' : ''}" data-idx="${i}">
+                <span class="result-icon"><i class="fa-solid ${it.icon}"></i></span>
+                <div class="result-body"><div class="result-title">${escapeHtml(it.title)}</div><div class="result-meta">${escapeHtml(it.meta)}</div></div>
+                <span class="result-kind">${it.kind}</span>
+            </div>`;
+        });
+        results.innerHTML = html;
+        $$('.search-result-item', results).forEach(el => {
+            el.addEventListener('click', () => runSearchItem(parseInt(el.getAttribute('data-idx'), 10)));
+            el.addEventListener('mousemove', () => setActiveResult(parseInt(el.getAttribute('data-idx'), 10)));
+        });
+    }
+
+    function setActiveResult(i) {
+        searchState.active = i;
+        $$('#search-results .search-result-item').forEach(el => el.classList.toggle('is-active', parseInt(el.getAttribute('data-idx'), 10) === i));
+    }
+    function scrollActiveIntoView() {
+        const el = $(`#search-results .search-result-item[data-idx="${searchState.active}"]`);
+        if (el) el.scrollIntoView({ block: 'nearest' });
+    }
+    function runSearchItem(i) {
+        const it = searchState.filtered[i];
+        if (!it) return;
+        closeSearch();
+        it.action();
+    }
+    function openSearch() {
+        const ov = $('#search-overlay');
+        const input = $('#search-input');
+        if (!ov) return;
+        ov.hidden = false;
+        renderSearchResults('');
+        if (input) { input.value = ''; setTimeout(() => input.focus(), 30); }
+    }
+    function closeSearch() {
+        const ov = $('#search-overlay');
+        if (ov) ov.hidden = true;
+    }
+    function initSearch() {
+        const trigger = $('#open-search');
+        const ov = $('#search-overlay');
+        const input = $('#search-input');
+        if (trigger) trigger.addEventListener('click', openSearch);
+        if (ov) ov.addEventListener('click', (e) => { if (e.target === ov) closeSearch(); });
+        if (input) {
+            input.addEventListener('input', (e) => renderSearchResults(e.target.value));
+            input.addEventListener('keydown', (e) => {
+                const n = searchState.filtered.length;
+                if (e.key === 'ArrowDown') { e.preventDefault(); setActiveResult(Math.min(n - 1, searchState.active + 1)); scrollActiveIntoView(); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveResult(Math.max(0, searchState.active - 1)); scrollActiveIntoView(); }
+                else if (e.key === 'Enter') { e.preventDefault(); runSearchItem(searchState.active); }
+                else if (e.key === 'Escape') { e.preventDefault(); closeSearch(); }
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            const tag = (e.target.tagName || '').toLowerCase();
+            const typing = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+            if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); openSearch(); return; }
+            if (e.key === '/' && !typing) { e.preventDefault(); openSearch(); }
+        });
+    }
+
+    // ======================================================================
     // 19. Global render + init
     // ======================================================================
     function renderAll() {
@@ -1259,9 +1789,13 @@ FROM {{ ref('stg_imagino_users') }}
         renderBadges();
         renderBlogFilters();
         renderArticles();
+        renderDashboard();
+        refreshFeedUI();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        initSidebar();
+        initTheme();
         initNav();
         initUserSwitcher();
         initAddUser();
@@ -1271,6 +1805,9 @@ FROM {{ ref('stg_imagino_users') }}
         initSnippets();
         initMasterIndex();
         initBlog();
+        initDashboard();
+        initNotifications();
+        initSearch();
         renderAll();
     });
 
