@@ -1440,16 +1440,15 @@ FROM {{ ref('stg_imagino_users') }}
         fill('#coverage-list', rep(5, skBar));
     }
 
-    // Enter a data-heavy tab: flash skeletons, then reveal real content (premium feel).
+    // Enter a data-heavy tab: data is local, so render immediately and play a
+    // light staggered reveal — no artificial skeleton latency.
     function enterDashboard() {
-        if (prefersReducedMotion()) { renderDashboard(); return; }
-        dashSkeleton();
-        setTimeout(() => { renderDashboard(); reveal('#dash-stats', '.dash-col-main', '.dash-col-side'); }, 420);
+        renderDashboard();
+        reveal('#dash-stats', '.dash-col-main', '.dash-col-side');
     }
     function enterAnalytics() {
-        if (prefersReducedMotion()) { renderAnalytics(); return; }
-        analyticsSkeleton();
-        setTimeout(() => { renderAnalytics(); reveal('#analytics-kpis', '.analytics-grid'); }, 480);
+        renderAnalytics();
+        reveal('#analytics-kpis', '.analytics-grid');
     }
 
     // ======================================================================
