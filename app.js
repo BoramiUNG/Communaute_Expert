@@ -614,8 +614,8 @@ FROM {{ ref('stg_imagino_users') }}
         $$('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tabId}`));
         const shell = $('#app-shell');
         if (shell) shell.classList.remove('sidebar-open'); // close mobile drawer on nav
-        if (tabId === 'dashboard') renderDashboard();
-        if (tabId === 'analytics') renderAnalytics();
+        if (tabId === 'dashboard') enterDashboard();
+        if (tabId === 'analytics') enterAnalytics();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1398,6 +1398,61 @@ FROM {{ ref('stg_imagino_users') }}
     }
 
     // ======================================================================
+    // 18a. Skeleton loaders & premium reveal
+    // ======================================================================
+    function skStatCard() {
+        return `<div class="stat-card"><div class="skeleton sk-circle" style="width:44px;height:44px;margin-bottom:0.85rem;"></div><div class="skeleton sk-line sk-lg w-40"></div><div class="skeleton sk-line sk-sm w-80"></div></div>`;
+    }
+    function skRow() {
+        return `<div class="sk-row"><div class="skeleton sk-circle" style="width:34px;height:34px;flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div class="skeleton sk-line w-60"></div><div class="skeleton sk-line sk-sm w-40"></div></div></div>`;
+    }
+    function skBar() {
+        return `<div style="padding:0.55rem 0;"><div class="skeleton sk-line sk-sm w-40" style="margin-bottom:0.45rem;"></div><div class="skeleton sk-line w-100"></div></div>`;
+    }
+    function fill(id, html) { const el = $(id); if (el) el.innerHTML = html; }
+    function rep(n, fn) { return Array.from({ length: n }, fn).join(''); }
+
+    // Restart the staggered entrance animation on a container's direct children
+    function reveal() {
+        if (prefersReducedMotion()) return;
+        for (let i = 0; i < arguments.length; i++) {
+            const el = $(arguments[i]);
+            if (!el) continue;
+            el.classList.remove('reveal-in');
+            void el.offsetWidth; // force reflow so the animation replays
+            el.classList.add('reveal-in');
+        }
+    }
+
+    function dashSkeleton() {
+        fill('#dash-stats', rep(5, skStatCard));
+        fill('#dash-progress', `<div class="sk-row"><div class="skeleton sk-circle" style="width:92px;height:92px;flex-shrink:0;"></div><div style="flex:1;"><div class="skeleton sk-line w-60"></div><div class="skeleton sk-line w-100"></div><div class="skeleton sk-line sk-sm w-40"></div></div></div>`);
+        fill('#dash-clinique', rep(3, skRow));
+        fill('#dash-articles', rep(3, skRow));
+        fill('#dash-next-badges', rep(3, skRow));
+        fill('#dash-activity', rep(4, skRow));
+    }
+    function analyticsSkeleton() {
+        fill('#analytics-kpis', rep(4, skStatCard));
+        fill('#radar-container', `<div class="skeleton sk-svg" style="width:100%;"></div>`);
+        fill('#spof-list', rep(5, skRow));
+        fill('#skills-heatmap', `<div class="skeleton" style="width:100%;height:220px;"></div>`);
+        fill('#coverage-list', rep(5, skBar));
+    }
+
+    // Enter a data-heavy tab: flash skeletons, then reveal real content (premium feel).
+    function enterDashboard() {
+        if (prefersReducedMotion()) { renderDashboard(); return; }
+        dashSkeleton();
+        setTimeout(() => { renderDashboard(); reveal('#dash-stats', '.dash-col-main', '.dash-col-side'); }, 420);
+    }
+    function enterAnalytics() {
+        if (prefersReducedMotion()) { renderAnalytics(); return; }
+        analyticsSkeleton();
+        setTimeout(() => { renderAnalytics(); reveal('#analytics-kpis', '.analytics-grid'); }, 480);
+    }
+
+    // ======================================================================
     // 18b. Dashboard
     // ======================================================================
     function renderDashboard() {
@@ -1409,7 +1464,7 @@ FROM {{ ref('stg_imagino_users') }}
         if (greetEl) {
             const h = new Date().getHours();
             const g = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
-            greetEl.textContent = `${g}, ${user.name.split('.')[0]} 👋`;
+            greetEl.textContent = `${g}, ${user.name.split('.')[0]}`;
         }
 
         const earned = earnedBadges(user).length;
@@ -1809,6 +1864,7 @@ FROM {{ ref('stg_imagino_users') }}
         initNotifications();
         initSearch();
         renderAll();
+        enterDashboard(); // premium skeleton reveal on first paint (dashboard is the default tab)
     });
 
 })();
