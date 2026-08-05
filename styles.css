@@ -849,7 +849,7 @@ body.theme-light .theme-toggle .fa-moon { display: block; }
 .search-inline input:focus { outline: none; border-color: var(--l7-green); box-shadow: var(--ring); }
 
 /* ==========================================================================
-   11. Clinique (incidents)
+   11. Hôpital (incidents)
    ========================================================================== */
 .incidents-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--sp-5); margin-bottom: var(--sp-6); }
 .incident-card {

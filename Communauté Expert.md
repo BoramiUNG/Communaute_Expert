@@ -22,12 +22,12 @@ flowchart TD
 
     subgraph Backend ["⚙️ API & Backend Layer"]
         C1["⚡ Azure Functions / Serverless Node.js API"]
-        C2["🛢️ PostgreSQL / Supabase (State, Squad XP, Clinique Tickets)"]
+        C2["🛢️ PostgreSQL / Supabase (State, Squad XP, Hôpital Tickets)"]
     end
 
     subgraph Integrations ["🔌 Écosystème M365 & Externe"]
         D1["📚 Microsoft Graph API : SharePoint (Stockage Blueprints & Documents)"]
-        D2["💬 Teams Webhook / Bot (Notifications Tickets Clinique Tech)"]
+        D2["💬 Teams Webhook / Bot (Notifications Tickets Hôpital Tech)"]
         D3["📅 Outlook Calendar DeepLinks (Reunion Teams 15-min)"]
         D4["💼 LinkedIn Share API (Publication Articles Tech Leadership)"]
     end
@@ -93,12 +93,12 @@ sequenceDiagram
 
 ---
 
-## 4. Intégration Microsoft Teams & Clinique Tech
+## 4. Intégration Microsoft Teams & Hôpital Tech
 
 ### **A. Notifications d'Urgence (Teams Incoming Webhooks)**
-Lorsqu'un consultant soumet un ticket sur la Clinique Tech :
-* Un Webhook envoie une carte formatée (**Adaptive Card**) dans le canal Teams officiel **`#tech-clinique-lineup7`** :
-  > **🚨 Nouveau cas Clinique Tech !**  
+Lorsqu'un consultant soumet un ticket sur l'Hôpital Tech :
+* Un Webhook envoie une carte formatée (**Adaptive Card**) dans le canal Teams officiel **`#tech-hopital-lineup7`** :
+  > **🚨 Nouveau cas Hôpital Tech !**  
   > **Sujet** : Timeout Ingestion Data Cloud  
   > **Demandeur** : Yassine.K  
   > **[M'inscrire pour l'aider (1-Clic)]** *(Ouvre la Web App et assigne le Helper)*
@@ -106,13 +106,13 @@ Lorsqu'un consultant soumet un ticket sur la Clinique Tech :
 ### **B. Génération d'Échange Teams 15 min (Outlook Deeplinks)**
 Lorsqu'un Helper s'inscrit :
 * Un bouton dynamique génère une invitation Outlook/Teams pré-remplie :  
-  `https://outlook.office.com/calendar/0/deeplink/compose?subject=Clinique+Tech+-+Déblocage&body=...`
+  `https://outlook.office.com/calendar/0/deeplink/compose?subject=Hopital+Tech+-+Déblocage&body=...`
 
 ---
 
 ## 5. Intégration LinkedIn & Thought Leadership (Export & Publish)
 
-Pour transformer les succès de la Clinique Tech et les Blueprints en articles de visibilité externe :
+Pour transformer les succès de l'Hôpital Tech et les Blueprints en articles de visibilité externe :
 
 ```mermaid
 flowchart LR
@@ -133,7 +133,7 @@ flowchart LR
 * **API Serverless** : Azure Functions (Node.js/TypeScript) exposant les endpoints REST :
   * `GET /api/users` & `PUT /api/users/:id/skills`
   * `GET /api/matrix`
-  * `POST /api/clinique/tickets`
+  * `POST /api/hopital/tickets`
   * `GET /api/snippets` & `POST /api/snippets`
   * `GET /api/articles` & `POST /api/articles`
 * **Base de données** : Azure Database for PostgreSQL ou Supabase Enterprise (PostgreSQL avec Row Level Security).
@@ -146,7 +146,7 @@ flowchart LR
 | :--- | :--- | :--- |
 | **Phase 1 (Actuelle)** | **Prototype Frontend autonome complet** (7 onglets, LocalStorage, CSS Slate Navy, SVGs, Modals). | **Réalisé (OK)** |
 | **Phase 2 (M365 Integration)** | • Création de l'App Teams Manifest (.zip).<br>• Setup de l'Azure Static Web App avec SSO Entra ID.<br>• Connecteur SharePoint Graph API pour l'upload de Blueprints. | **Semaine 1 - 2** |
-| **Phase 3 (Teams Bot & Database)** | • Déploiement de la base PostgreSQL Supabase.<br>• Webhook Incoming sur le canal Teams `#tech-clinique`. | **Semaine 3** |
+| **Phase 3 (Teams Bot & Database)** | • Déploiement de la base PostgreSQL Supabase.<br>• Webhook Incoming sur le canal Teams `#tech-hopital`. | **Semaine 3** |
 | **Phase 4 (LinkedIn Automation)** | • Intégration de l'API LinkedIn Share v2.<br>• Dashboard d'impact (vues, partages des posts de la communauté). | **Semaine 4** |
 
 ---
@@ -154,4 +154,4 @@ flowchart LR
 ## 🎯 Prochaines Actions Recommandées pour Elian
 1. **Tester le prototype en interne** auprès de 2 à 3 consultants référents (*Hugo.S, Yassine.K, Lucas.A*) pour recueillir leurs premiers retours.
 2. **Valider la création de l'App Teams** auprès du service IT / DSI Isoskele pour autoriser l'installation du manifest Teams en onglet personnel.
-3. **Créer le canal Teams `#tech-clinique-lineup7`** pour recevoir les notifications automatiques.
+3. **Créer le canal Teams `#tech-hopital-lineup7`** pour recevoir les notifications automatiques.

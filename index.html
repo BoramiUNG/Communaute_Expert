@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="LineUp7 Guild Hub — le hub interne de la Guilde d'experts MarTech & Data : dashboard, arbre de compétences, matrice des talents, snippets, clinique tech, blog et badges gamifiés.">
+    <meta name="description" content="LineUp7 Guild Hub — le hub interne de la Guilde d'experts MarTech & Data : dashboard, arbre de compétences, matrice des talents, snippets, hôpital tech, blog et badges gamifiés.">
     <meta name="theme-color" content="#0f172a">
     <meta property="og:title" content="LineUp7 | Guild Hub — MarTech & Data">
     <meta property="og:description" content="Le hub gamifié de la communauté d'experts LineUp7 : compétences, entraide, badges et thought leadership.">
@@ -56,7 +56,7 @@
                 <button class="nav-btn" data-tab="snippet-vault"><i class="fa-solid fa-code"></i><span>Snippet Vault</span></button>
 
                 <span class="nav-group-label">Collaboration</span>
-                <button class="nav-btn" data-tab="clinique"><i class="fa-solid fa-kit-medical"></i><span>Clinique Tech</span><span class="nav-count" id="nav-clinique-count">3</span></button>
+                <button class="nav-btn" data-tab="clinique"><i class="fa-solid fa-kit-medical"></i><span>Hôpital Tech</span><span class="nav-count" id="nav-clinique-count">3</span></button>
                 <button class="nav-btn" data-tab="master-index"><i class="fa-solid fa-database"></i><span>Master Index</span></button>
                 <button class="nav-btn" data-tab="quests"><i class="fa-solid fa-scroll"></i><span>Quêtes</span></button>
                 <button class="nav-btn" data-tab="blog"><i class="fa-solid fa-newspaper"></i><span>Blog &amp; LinkedIn</span></button>
@@ -140,7 +140,7 @@
                             </div>
                             <div class="panel">
                                 <div class="panel-head">
-                                    <h3><i class="fa-solid fa-kit-medical"></i> Clinique Tech · cas ouverts</h3>
+                                    <h3><i class="fa-solid fa-kit-medical"></i> Hôpital Tech · cas ouverts</h3>
                                     <button class="link-btn switch-tab" data-target="clinique">Tout voir <i class="fa-solid fa-arrow-right"></i></button>
                                 </div>
                                 <div id="dash-clinique"></div>
@@ -256,11 +256,11 @@
                     <div class="snippets-grid" id="snippets-container"><!-- JS --></div>
                 </section>
 
-                <!-- ===================== CLINIQUE TECH ===================== -->
+                <!-- ===================== HÔPITAL TECH ===================== -->
                 <section id="tab-clinique" class="tab-content">
                     <div class="page-head">
                         <div>
-                            <h1 class="page-title"><i class="fa-solid fa-kit-medical"></i> Clinique Tech</h1>
+                            <h1 class="page-title"><i class="fa-solid fa-kit-medical"></i> Hôpital Tech</h1>
                             <p class="page-subtitle">Vos points de blocage techniques. Soumettez un cas, ou inscrivez-vous comme Helper pour gagner de l'XP.</p>
                         </div>
                         <button class="btn btn-primary" id="btn-open-submit-modal"><i class="fa-solid fa-triangle-exclamation"></i> Soumettre un cas</button>
@@ -471,7 +471,7 @@
     <!-- ============================== MODALS ============================== -->
     <div id="submit-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3><i class="fa-solid fa-triangle-exclamation"></i> Soumettre un cas à la Clinique</h3><button class="close-modal">&times;</button></div>
+            <div class="modal-header"><h3><i class="fa-solid fa-triangle-exclamation"></i> Soumettre un cas à l'Hôpital Tech</h3><button class="close-modal">&times;</button></div>
             <form id="incident-form">
                 <div class="form-group"><label>Titre du blocage</label><input type="text" id="inc-title" placeholder="ex: Timeout SSJS purge DE SFMC" required></div>
                 <div class="form-group"><label>Description</label><textarea id="inc-desc" rows="3" placeholder="Contexte, ce qui a déjà été tenté…" required></textarea></div>

@@ -1,7 +1,7 @@
 {
   "name": "LineUp7 Guild Hub",
   "short_name": "Guild Hub",
-  "description": "Le hub gamifié de la communauté d'experts MarTech & Data LineUp7 : Skill Tree, Matrice des Talents, Snippet Vault, Clinique Tech et Analytics.",
+  "description": "Le hub gamifié de la communauté d'experts MarTech & Data LineUp7 : Skill Tree, Matrice des Talents, Snippet Vault, Hôpital Tech et Analytics.",
   "lang": "fr",
   "dir": "ltr",
   "start_url": "./index.html",
