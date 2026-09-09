@@ -402,6 +402,75 @@ FROM (
     FROM Staging_Subscribers_History History
 ) Final
 WHERE Final.ExclusionReason != 'Other_Soft';` },
+            { id: 'snip-ssjs-multi-de-purge', category: 'SFMC', authorId: 'elian-m', title: 'SFMC SSJS · Purge Instantanée Multi-Data Extensions (WSProxy ClearData)',
+              desc: "Script clé en main 100% agnostique : vide instantanément une liste de Data Extensions sans requêtes SQL de purge individuelles.",
+              code: `<script runat="server">
+Platform.Load("Core", "1");
+/* ==============================================================================
+   LINEUP7 ASSET: Fast Multi-DataExtension Purge (Client-Agnostic)
+   DESCRIPTION: Utilise WSProxy pour vider instantanément une liste de DEs.
+   USAGE: Renseignez simplement vos clés de Data Extensions dans le tableau ci-dessous.
+   ============================================================================== */
+var api = new Script.Util.WSProxy();
+
+// Liste des CustomerKeys des Data Extensions à purger
+var targetDEKeys = [
+    "{{DE_CUSTOMER_KEY_1}}",
+    "{{DE_CUSTOMER_KEY_2}}",
+    "{{DE_CUSTOMER_KEY_3}}"
+];
+
+for (var i = 0; i < targetDEKeys.length; i++) {
+    try {
+        var key = targetDEKeys[i];
+        var properties = { CustomerKey: key };
+        var action = "ClearData";
+        var result = api.performItem("DataExtension", properties, action, {});
+        Write("Purge réussie pour la DE : " + key + "<br/>");
+    } catch (err) {
+        Write("Erreur lors de la purge de " + key + " : " + Stringify(err) + "<br/>");
+    }
+}
+</script>` },
+            { id: 'snip-sql-isp-warming-slicing', category: 'SFMC', authorId: 'elian-m', title: 'SFMC SQL · Matrice IP Warming & Quotas par Fournisseur d\'Accès (ISP Slicing)',
+              desc: "Template générique d'IP Warming : découpe les envois par quotas d'ISP (Gmail, Orange, Microsoft) et priorise l'engagement récent (<90j).",
+              code: `/* ==============================================================================
+   LINEUP7 ASSET: IP Warming ISP Slicing Template (Client-Agnostic)
+   DESCRIPTION: Découpe quotidienne des envois par Fournisseur d'Accès (ISP)
+   pour respecter les paliers de chauffe et maximiser la délivrabilité.
+   USAGE: Ajustez les quotas TOP X selon votre semaine de chauffe (S1, S2, S3, S4).
+   ============================================================================== */
+
+/* 1. GMAIL (Priorité aux cliqueurs récents <90j) */
+SELECT TOP 2000
+    Src.SubscriberKey, Src.Email, Src.Domain, 'Gmail' AS ISP_Group, GETDATE() AS AllocatedDate
+FROM [{{SOURCE_AUDIENCE_DE}}] Src
+WHERE Src.Domain IN ('gmail.com', 'googlemail.com')
+  AND Src.IsOptin = 1
+  AND NOT EXISTS (SELECT 1 FROM [{{WARMING_HISTORY_LOG_DE}}] Log WHERE Log.SubscriberKey = Src.SubscriberKey)
+ORDER BY CASE WHEN Src.LastClickDate >= DATEADD(day, -90, GETDATE()) THEN 0 ELSE 1 END, Src.SubscriberKey
+
+UNION
+
+/* 2. ORANGE / WANADOO */
+SELECT TOP 1000
+    Src.SubscriberKey, Src.Email, Src.Domain, 'Orange' AS ISP_Group, GETDATE() AS AllocatedDate
+FROM [{{SOURCE_AUDIENCE_DE}}] Src
+WHERE Src.Domain IN ('orange.fr', 'wanadoo.fr')
+  AND Src.IsOptin = 1
+  AND NOT EXISTS (SELECT 1 FROM [{{WARMING_HISTORY_LOG_DE}}] Log WHERE Log.SubscriberKey = Src.SubscriberKey)
+ORDER BY CASE WHEN Src.LastClickDate >= DATEADD(day, -90, GETDATE()) THEN 0 ELSE 1 END, Src.SubscriberKey
+
+UNION
+
+/* 3. MICROSOFT (Hotmail, Outlook, Live) */
+SELECT TOP 800
+    Src.SubscriberKey, Src.Email, Src.Domain, 'Microsoft' AS ISP_Group, GETDATE() AS AllocatedDate
+FROM [{{SOURCE_AUDIENCE_DE}}] Src
+WHERE Src.Domain IN ('hotmail.com', 'hotmail.fr', 'outlook.com', 'outlook.fr', 'live.fr')
+  AND Src.IsOptin = 1
+  AND NOT EXISTS (SELECT 1 FROM [{{WARMING_HISTORY_LOG_DE}}] Log WHERE Log.SubscriberKey = Src.SubscriberKey)
+ORDER BY CASE WHEN Src.LastClickDate >= DATEADD(day, -90, GETDATE()) THEN 0 ELSE 1 END, Src.SubscriberKey;` },
             { id: 'snip-ampscript', category: 'SFMC', authorId: 'elian-m', title: 'AMPscript Lookup & Dynamic Header Personalization',
               desc: "Scripting d'emailing dynamique sécurisé avec fallback automatique si l'attribut prénom/profil est absent.",
               code: `%%[
@@ -501,7 +570,7 @@ FROM {{ ref('stg_imagino_users') }}
         articles.forEach(a => { if (typeof a.likes !== 'number') a.likes = 0; if (!Array.isArray(a.likedBy)) a.likedBy = []; if (typeof a.reads !== 'number') a.reads = 0; if (!a.category) a.category = (a.tags || '#Autre').split(' ')[0].replace('#', ''); });
 
         let snippets = read(KEYS.snippets, null);
-        if (!Array.isArray(snippets) || snippets.length === 0 || !snippets.some(s => s.id === 'snip-list-hygiene-sql')) {
+        if (!Array.isArray(snippets) || snippets.length === 0 || !snippets.some(s => s.id === 'snip-ssjs-multi-de-purge')) {
             snippets = seedSnippets;
             write(KEYS.snippets, snippets);
         }
@@ -548,7 +617,7 @@ FROM {{ ref('stg_imagino_users') }}
     }
 
     const nodeDetails = {
-        'sfmc-core': { title: 'Marketing Cloud Engagement & AMPscript', desc: 'SQL Data Views, SSJS, Automation Studio, AMPscript & Délivrabilité', blueprints: ['Package_MCE_ListHygiene_LineUp7.zip', 'LineUp7_SFMC_Audit_Checklist.pdf', 'SSJS_DataExtension_Cleanup_Snippet.js', 'LineUp7_AMPscript_CheatSheet.pdf'] },
+        'sfmc-core': { title: 'Marketing Cloud Engagement & AMPscript', desc: 'SQL Data Views, SSJS, Automation Studio, AMPscript & Délivrabilité', blueprints: ['Package_MCE_ListHygiene_LineUp7.zip', 'LineUp7_Script_SSJS_Fast_Purge_MultiDE.ssjs', 'LineUp7_SFMC_Audit_Checklist.pdf', 'LineUp7_AMPscript_CheatSheet.pdf'] },
         'sf-datacloud': { title: 'Salesforce Data Cloud & Insights', desc: 'DMO/DSO Modeling, Ingestion Streams, Calculated Insights, Identity Resolution', blueprints: ['DataCloud_DMO_Customer_Model_Template.drawio', 'Identity_Resolution_Rules_Guide.pdf', 'DataCloud_Calculated_Insights_RFM.sql'] },
         'agentforce-mcp': { title: 'Agentforce & Serveurs MCP', desc: "AI Agents autonomes, Model Context Protocol, Endpoints d'outils et connexions LLM", blueprints: ['MCP_Server_NodeJS_Boilerplate.zip', 'Agentforce_Prompt_Engineering_Rules.md'] },
         'imagino-cdp': { title: 'Imagino CDP & Golden Record', desc: 'Modélisation Data Client 360, Unification, déduplication & règles de Golden Record', blueprints: ['Imagino_GoldenRecord_Config_Recipe.json'] },
@@ -558,8 +627,8 @@ FROM {{ ref('stg_imagino_users') }}
         'dbt-modeling': { title: 'dbt (Data Build Tool) & Data Quality', desc: 'Transformations Jinja/SQL modulaires, Modèles incrémentaux & Data Quality Testing', blueprints: ['dbt_MarTech_Core_Project_Structure.zip'] },
         'airflow-pipelines': { title: 'Apache Airflow & Orchestration DAGs', desc: 'DAGs complexes, sync CRM/CDP, alertes Teams et retries automatiques', blueprints: ['Airflow_SFMC_Sync_DAG_Template.py'] },
         'sfmc-ampscript': { title: 'AMPscript & Personnalisation Dynamique SFMC', desc: "Scripting d'emails dynamiques, Lookups d'extensions, Content Blocks réutilisables & Fallbacks", blueprints: ['LineUp7_AMPscript_CheatSheet.pdf', 'Dynamic_Header_AMPscript_Template.html'] },
-        'sfmc-ssjs-sql': { title: 'SSJS & SQL Data Views SFMC', desc: 'Automation Studio, Data Extensions temporaires, REST/SOAP APIs et scripts SSJS avancés', blueprints: ['SSJS_DataExtension_Cleanup_Snippet.js', 'SQL_DataViews_Query_Pack.sql'] },
-        'sfmc-deliverability': { title: 'Délivrabilité & Configuration BU SFMC', desc: 'Package ListHygiene (Faux Soft Bounces, Auto-Suppression List permanente & Respiration 4 mois), IP Warming, SAP', blueprints: ['Package_MCE_ListHygiene_LineUp7.zip', '01_dynamic_hygiene_pulse.md', 'LineUp7_IP_Warming_Plan_4Weeks.xlsx'] },
+        'sfmc-ssjs-sql': { title: 'SSJS & SQL Data Views SFMC', desc: 'Automation Studio, Data Extensions temporaires, REST/SOAP APIs et scripts SSJS avancés', blueprints: ['LineUp7_Script_SSJS_Fast_Purge_MultiDE.ssjs', 'SQL_DataViews_Query_Pack.sql'] },
+        'sfmc-deliverability': { title: 'Délivrabilité & Configuration BU SFMC', desc: 'Package ListHygiene (Faux Soft Bounces, Auto-Suppression List permanente & Respiration 4 mois), IP Warming, SAP', blueprints: ['Package_MCE_ListHygiene_LineUp7.zip', 'LineUp7_Template_SQL_IP_Warming_Slicing.sql', 'LineUp7_IP_Warming_Plan_4Weeks.xlsx'] },
         'sfmc-next-flows': { title: 'Marketing Cloud Next & Salesforce Flows', desc: 'Orchestration par Salesforce Flows, Triggered Sending, Event-Driven Marketing & Data Cloud Actions', blueprints: ['MC_Next_Flow_Orchestration_Pattern.pdf'] },
         'sf-datacloud-dmo': { title: 'Salesforce Data Cloud DMO & Identity', desc: 'Modélisation DMO/DSO, Data Ingestion Streams, règles de réconciliation & Match Rules Customer 360', blueprints: ['DataCloud_DMO_Customer_Model_Template.drawio', 'Identity_Resolution_Rules_Guide.pdf'] },
         'sf-datacloud-insights': { title: 'Calculated Insights & Data Transforms', desc: 'Calculated Insights SQL, Streaming Data Transforms, métriques LTV/RFM et agrégats temps réel', blueprints: ['DataCloud_Calculated_Insights_RFM_Recipes.sql'] },
