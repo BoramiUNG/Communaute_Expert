@@ -251,6 +251,39 @@
         ];
 
         const seedArticles = [
+            { id: 'art-sfmc-list-hygiene', title: "Salesforce Marketing Cloud : Pourquoi vos 'Soft Bounces' cachent des Hard Bounces destructeurs pour votre réputation IP",
+              author: 'Elian.M', authorAvatar: 'EM', date: '09/09/2026', readTime: '5 min',
+              tags: '#SFMC #Délivrabilité #MarketingCloud #DataQuality #Emailing', category: 'SFMC',
+              summary: "Retour d'expérience sur notre package ListHygiene : détection des faux soft bounces (boîtes closes), exclusion dynamique avec respiration à 4 mois et contournement de la purge des 6 mois de SFMC.",
+              likes: 18, likedBy: [], reads: 142,
+              content: `### 🚨 Salesforce Marketing Cloud : vos "Soft Bounces" cachent un danger invisible
+
+Dans la majorité des audits de délivrabilité que nous menons chez **LineUp7**, nous constatons le même schéma : une équipe marketing fière d'avoir un taux de Hard Bounce inférieur à 0,5%... alors que sa réputation d'expéditeur s'effondre silencieusement auprès de Gmail, Microsoft 365 et Yahoo.
+
+Pourquoi ? Parce que les messageries modernes et SFMC ne qualifient pas toujours les boîtes fermées en Hard Bounces.
+
+#### 🔍 1. Le piège des "Faux Soft Bounces"
+Dans les faits, de nombreux serveurs d'entreprises ou opérateurs renvoient un code temporaire (Soft Bounce) avec des libellés SMTP explicites :
+- \`"mailbox is disabled"\`
+- \`"account inactive"\`
+- \`"user not accepting messages"\`
+
+Si votre automatisation ne traite que les Hard Bounces natifs, **ces adresses continuent d'être ciblées campagne après campagne**, détruisant votre score de réputation IP.
+
+#### 🛡️ 2. La limite fatale des 6 mois de SFMC
+Salesforce Marketing Cloud purge automatiquement ses Data Views de tracking (\`_Bounce\`, \`_Sent\`) après **6 mois (180 jours)**. Si vous n'avez pas un **Master Log permanent agnostique**, un contact en Hard Bounce il y a 7 mois redeviendra éligible à vos envois dès le prochain import !
+
+#### ⚡ 3. La solution LineUp7 : Package ListHygiene & Respiration 4 mois
+Pour nos clients à fort volume (>5M d'abonnés), nous avons standardisé une architecture SQL industrialisée :
+1. **Détection SQL ciblée** : requêtes automatisées quotidiennes qualifiant immédiatement les faux soft bounces en exclusions permanentes.
+2. **Auto-Suppression List (ASL) Permanente** : synchronisation quotidienne vers une liste de suppression globale au niveau de la Business Unit.
+3. **Respiration dynamique (Pulse Re-engagement)** : mise en quarantaine des inactifs de plus de 4 mois, avec un sas de réactivation contrôlé (1 envoi test tous les 4 mois).
+4. **Architecture High-Volume staged** : découpage des requêtes pour éviter le timeout strict des 30 minutes d'Automation Studio.
+
+---
+💡 *Le package complet (scripts SQL, schémas Data Extension et dashboard CloudPage) est documenté et disponible au sein de la Guilde d'Expertise LineUp7.*
+
+#SFMC #Délivrabilité #SalesforceMarketingCloud #LineUp7 #MarTech #EmailDeliverability` },
             { id: 'art-mcp-2026', title: "Pourquoi le Model Context Protocol (MCP) redéfinit l'architecture MarTech en 2026",
               author: 'Elian.M', authorAvatar: 'EM', date: '30/07/2026', readTime: '4 min',
               tags: '#Agentforce #MCP #MarTech #Salesforce', category: 'Agentforce',
@@ -309,6 +342,66 @@ Toutes les entreprises n'ont pas besoin du même niveau de complexité pour unif
         ];
 
         const seedSnippets = [
+            { id: 'snip-list-hygiene-sql', category: 'SFMC', authorId: 'elian-m', title: 'SFMC · Détection des Faux Soft Bounces & Exclusion Dynamique (ListHygiene)',
+              desc: "Requête SQL d'exclusion quotidienne : identifie les boîtes closes masquées en soft bounces et applique la règle de respiration d'inactivité à 4 mois.",
+              code: `/* ==============================================================================
+   PACKAGE: SFMC List Hygiene & Deliverability
+   SCRIPT: 01_bounce_exclusion_pulse.sql
+   TARGET DATA EXTENSION: ListHygiene_Dynamic_Exclusion
+   ACTION TYPE: Overwrite (Daily Execution)
+   ============================================================================== */
+
+SELECT 
+    Final.SubscriberKey,
+    Final.BounceCategory,
+    Final.BounceSubcategory,
+    Final.SMTPCode,
+    Final.ExclusionReason,
+    Final.ExclusionEndDate,
+    Final.BounceEventDate,
+    Final.InactiveCount
+FROM (
+    SELECT 
+        History.SubscriberKey,
+        History.BounceCategory,
+        History.BounceSubcategory,
+        History.SMTPCode,
+        History.EventDate AS BounceEventDate,
+        History.InactiveCount,
+        
+        CASE
+            /* 1. Spam Complaint */
+            WHEN History.BounceCategory = 'Complaint' 
+                THEN 'Permanent_Complaint'
+            
+            /* 2. Hidden Hard Bounces (Faux Soft Bounces à exclure immédiatement) */
+            WHEN History.BounceCategory = 'Soft bounce' AND (
+                History.SMTPBounceReason LIKE '%disabled%' 
+                OR History.SMTPBounceReason LIKE '%inactive%'
+                OR History.SMTPBounceReason LIKE '%not accepting messages%'
+            ) THEN 'Permanent_Hard_Hidden'
+            
+            /* 3. Native Hard Bounces */
+            WHEN History.BounceCategory = 'Hard bounce' 
+                THEN 'Permanent_Hard_Native'
+            
+            /* 4. Pulse Re-engagement Inactivity (4 mois sans ouverture) */
+            WHEN History.InactiveCount >= 4 
+                THEN 'Temporary_Inactive_Pulse'
+            ELSE 'Other_Soft'
+        END AS ExclusionReason,
+        
+        CASE
+            WHEN History.BounceCategory = 'Complaint' THEN DATEADD(year, 100, GETDATE())
+            WHEN History.BounceCategory = 'Hard bounce' THEN DATEADD(year, 100, GETDATE())
+            WHEN History.SMTPBounceReason LIKE '%disabled%' THEN DATEADD(year, 100, GETDATE())
+            WHEN History.InactiveCount >= 4 THEN DATEADD(month, 4, GETDATE())
+            ELSE DATEADD(day, 7, GETDATE())
+        END AS ExclusionEndDate
+
+    FROM Staging_Subscribers_History History
+) Final
+WHERE Final.ExclusionReason != 'Other_Soft';` },
             { id: 'snip-ampscript', category: 'SFMC', authorId: 'elian-m', title: 'AMPscript Lookup & Dynamic Header Personalization',
               desc: "Scripting d'emailing dynamique sécurisé avec fallback automatique si l'attribut prénom/profil est absent.",
               code: `%%[
@@ -401,11 +494,17 @@ FROM {{ ref('stg_imagino_users') }}
         users.forEach(u => { u.stats = Object.assign({}, DEFAULT_STATS, u.stats); if (!u.joinedAt) u.joinedAt = '2025-01-01'; });
 
         let articles = read(KEYS.articles, null);
-        if (!Array.isArray(articles) || articles.length === 0) { articles = seedArticles; write(KEYS.articles, articles); }
+        if (!Array.isArray(articles) || articles.length === 0 || !articles.some(a => a.id === 'art-sfmc-list-hygiene')) {
+            articles = seedArticles;
+            write(KEYS.articles, articles);
+        }
         articles.forEach(a => { if (typeof a.likes !== 'number') a.likes = 0; if (!Array.isArray(a.likedBy)) a.likedBy = []; if (typeof a.reads !== 'number') a.reads = 0; if (!a.category) a.category = (a.tags || '#Autre').split(' ')[0].replace('#', ''); });
 
         let snippets = read(KEYS.snippets, null);
-        if (!Array.isArray(snippets) || snippets.length === 0) { snippets = seedSnippets; write(KEYS.snippets, snippets); }
+        if (!Array.isArray(snippets) || snippets.length === 0 || !snippets.some(s => s.id === 'snip-list-hygiene-sql')) {
+            snippets = seedSnippets;
+            write(KEYS.snippets, snippets);
+        }
 
         let currentUserId = read(KEYS.current, null) || 'elian-m';
 
@@ -449,7 +548,7 @@ FROM {{ ref('stg_imagino_users') }}
     }
 
     const nodeDetails = {
-        'sfmc-core': { title: 'Marketing Cloud Engagement & AMPscript', desc: 'SQL Data Views, SSJS, Automation Studio, AMPscript & Délivrabilité', blueprints: ['LineUp7_SFMC_Audit_Checklist.pdf', 'SSJS_DataExtension_Cleanup_Snippet.js', 'LineUp7_AMPscript_CheatSheet.pdf'] },
+        'sfmc-core': { title: 'Marketing Cloud Engagement & AMPscript', desc: 'SQL Data Views, SSJS, Automation Studio, AMPscript & Délivrabilité', blueprints: ['Package_MCE_ListHygiene_LineUp7.zip', 'LineUp7_SFMC_Audit_Checklist.pdf', 'SSJS_DataExtension_Cleanup_Snippet.js', 'LineUp7_AMPscript_CheatSheet.pdf'] },
         'sf-datacloud': { title: 'Salesforce Data Cloud & Insights', desc: 'DMO/DSO Modeling, Ingestion Streams, Calculated Insights, Identity Resolution', blueprints: ['DataCloud_DMO_Customer_Model_Template.drawio', 'Identity_Resolution_Rules_Guide.pdf', 'DataCloud_Calculated_Insights_RFM.sql'] },
         'agentforce-mcp': { title: 'Agentforce & Serveurs MCP', desc: "AI Agents autonomes, Model Context Protocol, Endpoints d'outils et connexions LLM", blueprints: ['MCP_Server_NodeJS_Boilerplate.zip', 'Agentforce_Prompt_Engineering_Rules.md'] },
         'imagino-cdp': { title: 'Imagino CDP & Golden Record', desc: 'Modélisation Data Client 360, Unification, déduplication & règles de Golden Record', blueprints: ['Imagino_GoldenRecord_Config_Recipe.json'] },
@@ -460,7 +559,7 @@ FROM {{ ref('stg_imagino_users') }}
         'airflow-pipelines': { title: 'Apache Airflow & Orchestration DAGs', desc: 'DAGs complexes, sync CRM/CDP, alertes Teams et retries automatiques', blueprints: ['Airflow_SFMC_Sync_DAG_Template.py'] },
         'sfmc-ampscript': { title: 'AMPscript & Personnalisation Dynamique SFMC', desc: "Scripting d'emails dynamiques, Lookups d'extensions, Content Blocks réutilisables & Fallbacks", blueprints: ['LineUp7_AMPscript_CheatSheet.pdf', 'Dynamic_Header_AMPscript_Template.html'] },
         'sfmc-ssjs-sql': { title: 'SSJS & SQL Data Views SFMC', desc: 'Automation Studio, Data Extensions temporaires, REST/SOAP APIs et scripts SSJS avancés', blueprints: ['SSJS_DataExtension_Cleanup_Snippet.js', 'SQL_DataViews_Query_Pack.sql'] },
-        'sfmc-deliverability': { title: 'Délivrabilité & Configuration BU SFMC', desc: 'Sender Authentication Package (SAP), IP Warming, SPF/DKIM/DMARC & Inbox Placement', blueprints: ['LineUp7_IP_Warming_Plan_4Weeks.xlsx', 'Deliverability_Audit_Checklist.pdf'] },
+        'sfmc-deliverability': { title: 'Délivrabilité & Configuration BU SFMC', desc: 'Package ListHygiene (Faux Soft Bounces, Auto-Suppression List permanente & Respiration 4 mois), IP Warming, SAP', blueprints: ['Package_MCE_ListHygiene_LineUp7.zip', '01_dynamic_hygiene_pulse.md', 'LineUp7_IP_Warming_Plan_4Weeks.xlsx'] },
         'sfmc-next-flows': { title: 'Marketing Cloud Next & Salesforce Flows', desc: 'Orchestration par Salesforce Flows, Triggered Sending, Event-Driven Marketing & Data Cloud Actions', blueprints: ['MC_Next_Flow_Orchestration_Pattern.pdf'] },
         'sf-datacloud-dmo': { title: 'Salesforce Data Cloud DMO & Identity', desc: 'Modélisation DMO/DSO, Data Ingestion Streams, règles de réconciliation & Match Rules Customer 360', blueprints: ['DataCloud_DMO_Customer_Model_Template.drawio', 'Identity_Resolution_Rules_Guide.pdf'] },
         'sf-datacloud-insights': { title: 'Calculated Insights & Data Transforms', desc: 'Calculated Insights SQL, Streaming Data Transforms, métriques LTV/RFM et agrégats temps réel', blueprints: ['DataCloud_Calculated_Insights_RFM_Recipes.sql'] },
